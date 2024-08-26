@@ -1,0 +1,38 @@
+You are in the middle of a room. Looking quickly around you, you see a cabinet 20, a cabinet 19, a cabinet 18, a cabinet 17, a cabinet 16, a cabinet 15, a cabinet 14, a cabinet 13, a cabinet 12, a cabinet 11, a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 3, a countertop 2, a countertop 1, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
+Your task is to: put two saltshaker in drawer.
+> think: To solve the task, I need to find and take the first saltshaker, then put it in drawer, then find and take the second saltshaker, then put it in drawer.
+OK.
+> think: First I need to find the first saltshaker. A saltshaker is more likely to appear in drawer (1-3), countertop (1-3), shelf (1-3), cabinet (1-20). Let me ask where to look for the saltshakers.
+OK.
+> speak: I need to find the saltshakers. A saltshaker is more likely to appear in drawer (1-3), countertop (1-3), shelf (1-3), cabinet (1-20). Where do you suggest I should look for the saltshakers first?
+Can you please check the countertop 3 first?
+> go to countertop 3
+On the countertop 3, you see a bowl 2, a houseplant 1, a knife 2, a peppershaker 1, a saltshaker 4, a soapbottle 1, a spatula 2, and a tomato 3.
+> think: Now I find the first saltshaker (4). Next, I need to take it.
+OK.
+> take saltshaker 4 from countertop 3
+You pick up the saltshaker 4 from the countertop 3.
+> think: Now I take the first saltshaker (4). Next, I need to put it in/on drawer 1.
+OK.
+> go to drawer 1
+The drawer 1 is open. In it, you see nothing.
+> put saltshaker 4 in/on drawer 1
+You put the saltshaker 4 in/on the drawer 1.
+> think: Now I put the first saltshaker in drawer. Next, I need to find the second saltshaker. I have visited drawer (1), countertop (3), so the second saltshaker is more likely to appear in drawer (2-3), countertop (1-2), shelf (1-3), cabinet (1-20). Let me ask where to look for the next saltshaker.
+OK.
+> speak: I put the first saltshaker in drawer. Next, I need to find the second saltshaker. I have visited drawer (1), countertop (3), so the second saltshaker is more likely to appear in drawer (2-3), countertop (1-2), shelf (1-3), cabinet (1-20). Where do you suggest I should look for the next saltshaker?
+Can you please check the cabinet 3 next?
+> go to cabinet 3
+The cabinet 3 is closed.
+> open cabinet 3
+You open the cabinet 3. The cabinet 3 is open. In it, you see a saltshaker 3, and a saltshaker 2.
+> think: Now I find the second saltshaker (2). Next, I need to take it.
+OK.
+> take saltshaker 2 from cabinet 3
+You pick up the saltshaker 2 from the cabinet 3.
+> think: Now I take the second saltshaker (2). Next, I need to put it in/on drawer 1.
+OK.
+> go to drawer 1
+The drawer 1 is open. In it, you see a saltshaker 4.
+> put saltshaker 2 in/on drawer 1
+You put the saltshaker 2 in/on the drawer 1.

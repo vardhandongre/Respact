@@ -1,0 +1,20 @@
+You are in the middle of a room. Looking quickly around you, you see a bathtubbasin 1, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a countertop 1, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a handtowelholder 1, a sinkbasin 2, a sinkbasin 1, a toilet 1, a toiletpaperhanger 1, and a towelholder 1.
+Your task is to: put a soapbottle in garbagecan.
+> think: To solve the task, I need to find and take a soapbottle, and put it in garbagecan.
+OK.
+> think: First I need to find a soapbottle. A soapbottle is more likely to appear in toilet (1), sinkbasin (1-2), bathtubbasin (1), cabinet (1-4), countertop (1), dresser (1), drawer (1-4), garbagecan (1). Let me ask where to look for the soapbottle first.
+OK.
+> speak: I need to find a soapbottle. A soapbottle is more likely to appear in toilet (1), sinkbasin (1-2), bathtubbasin (1), cabinet (1-4), countertop (1), dresser (1), drawer (1-4), garbagecan (1). Where do you suggest I should look for the soapbottle first?
+Can you please check the countertop 1 first?
+> go to countertop 1
+On the countertop 1, you see a soapbottle 2, and a spraybottle 1.
+> think: Now I find a soapbottle (2). Next, I need to take it.
+OK.
+> take soapbottle 2 from countertop 1
+You pick up the soapbottle 2 from the countertop 1.
+> think: Now I take a soapbottle (2). Next, I need to put it in/on garbagecan 1.
+OK.
+> go to garbagecan 1
+On the garbagecan 1, you see nothing.
+> put soapbottle 2 in/on garbagecan 1
+You put the soapbottle 2 in/on the garbagecan 1.

@@ -1,0 +1,23 @@
+You are in the middle of a room. Looking quickly around you, you see a coffeetable 1, a diningtable 1, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a sidetable 2, a sidetable 1, and a sofa 1.
+Your task is to: look at statue under the desklamp.
+> think: To solve the task, I need to find and take a statue, then find and use a desklamp.
+OK.
+> think: First I need to find a statue. A statue is more likely to appear in dresser (1), coffeetable (1), sidetable (1-2), diningtable (1), sofa (1), garbagecan (1). I can check one by one, starting with dresser 1.
+OK.
+> go to dresser 1
+On the dresser 1, you see a cellphone 3, a newspaper 2, a statue 1, and a television 1.
+> think: Now I find a statue (1). Next, I need to take it.
+OK.
+> take statue 1 from dresser 1
+You pick up the statue 1 from the dresser 1.
+> think: Now I take a statue (1). Next, I need to find a desklamp. A desklamp is more likely to appear in sidetable (1-2), coffeetable (1), diningtable (1). I can check one by one, starting with sidetable 1.
+OK.
+> go to sidetable 1
+On the sidetable 1, you see nothing.
+> go to sidetable 2
+On the sidetable 2, you see a desklamp 3, a newspaper 1, and a statue 2.
+> think: Now I find a desklamp (3). Next, I need to use it.
+OK.
+> use desklamp 3
+You turn on the desklamp 3.
+

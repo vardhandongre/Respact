@@ -1,0 +1,27 @@
+Action Space:
+
+- Put,
+- GoTo,
+- Take,
+- Open,
+- Toggle,
+- Close,
+- Clean,
+- Heat,
+- Cool,
+- Use,
+- Look,
+
+Grammar / Rules:
+
+- put {object} in/on {receptacle}
+- go to {receptacle}
+- take {object} from {receptacle}
+- open {receptacle}
+- toggle {object_or_receptacle}
+- close {receptacle}
+- clean {object} with {receptacle}
+- heat {object} with {receptacle}
+- cool {object} with {receptacle}
+- use {receptacle}
+- look

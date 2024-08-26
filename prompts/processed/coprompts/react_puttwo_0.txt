@@ -1,0 +1,38 @@
+You are in the middle of a room. Looking quickly around you, you see a armchair 2, a armchair 1, a bed 1, a countertop 1, a diningtable 1, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a laundryhamper 1, and a sidetable 1.
+Your task is to: put two creditcard in dresser.
+> think: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser.
+OK.
+> think: First I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). Let me ask where to look for the creditcards.
+OK.
+> speak: I need to find the first creditcard. A creditcard is more likely to appear in drawer (1-2), coutertop (1), sidetable (1), diningtable (1), armchair (1-2), bed (1). Where do you suggest I should look for the creditcard first?
+Can you please check the countertop 1 first?
+> go to countertop 1
+On the countertop 1, you see a cellphone 2, a creditcard 4, a creditcard 3, a creditcard 2, a mirror 1, a pencil 2, and a pencil 1.
+> think: Now I found three creditcards. creditcard (4), creditcard (3), creditcard (2). Let me ask which two I should pick.
+OK.
+> speak: I found three creditcards. creditcard (4), creditcard (3), creditcard (2). Which two I should put in the dresser?
+Please put creditcard 2 and creditcard 3 in the dresser
+> think: Now I find the first creditcard (2). Next, I need to take it. I can find the second creditcard (3) later in countertop 1.
+OK.
+> take creditcard 2 from countertop 1
+You pick up the creditcard 2 from the countertop 1.
+> think: Now I take the first creditcard (2). Next, I need to put it in/on dresser 1.
+OK.
+> go to dresser 1
+On the dresser 1, you see a mug 1, and a television 1.
+> put creditcard 2 in/on dresser 1
+You put the creditcard 2 in/on the dresser 1.
+> think: Now I put the first creditcard in dresser. Next, I need to find the second creditcard. I can directly go to countertop 1.
+OK.
+> go to countertop 1
+On the countertop 1, you see a cellphone 2, a creditcard 4, a creditcard 3, a mirror 1, a pencil 2, and a pencil 1.
+> think: Now I find the second creditcard (3). Next, I need to take it.
+OK.
+> take creditcard 3 from countertop 1
+You pick up the creditcard 3 from the countertop 1.
+> think: Now I take the second creditcard (3). Next, I need to put it in/on dresser 1.
+OK.
+> go to dresser 1
+On the dresser 1, you see a creditcard 2, a mug 1, and a television 1.
+> put creditcard 3 in/on dresser 1
+You put the creditcard 3 in/on the dresser 1.

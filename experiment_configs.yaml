@@ -1,0 +1,67 @@
+# config.yaml
+global_config:
+  splits:
+    - train
+    - sub_train
+    - valid_seen
+    - valid_train
+    - valid_unseen
+  cases:
+    - with_oracle
+    - partial_oracle
+    - no_oracle
+  methods:
+    - react
+    - respact
+  oracle_types:
+    - Planner
+    - Handcoded
+
+sampled_data_file: 'data/experiments/data_sample.json' # path to sub-sampled data directory
+
+env:
+  type: "AlfredTWEnv"
+  
+experiments:
+
+  experiment_0_case_1: # Case-1: Helpful Perfect User
+    name: 'helpful-user-train' 
+    split: 'train'
+    method: 'respact'
+    main_prompt_file: prompts/main_prompt.txt
+    method_prompt_file: 'prompts/respact_alfred.json'
+    oracle: True
+
+  experiment_1_case_1:  
+    name: 'helpful-user-train' 
+    split: 'train'
+    method: 'react'
+    main_prompt_file: prompts/main_prompt.txt
+    method_prompt_file: 'prompts/alfworld_3prompts.json'
+    oracle: False
+
+  experiment_2_case_1:
+    name: 'helpful-user-valid_seen' 
+    split: 'valid_seen'
+    method: 'respact'
+    main_prompt_file: prompts/main_prompt.txt
+    prompt_file: 'prompts/respact_alfred.json'
+    oracle: True
+
+  experiment_3_case_1:
+    name: 'helpful-user-valid_seen' 
+    split: 'valid_seen'
+    method: 'react'
+    main_prompt_file: prompts/main_prompt.txt
+    prompt_file: 'prompts/alfworld_3prompts.json'
+    oracle: False
+
+
+run_configs:
+  selected_experiments:
+    - experiment_1_case_1
+    - experiment_0_case_1
+
+
+
+
