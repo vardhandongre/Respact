@@ -2,6 +2,10 @@ import yaml
 import json
 
 class Config:
+    '''
+    Config class to load the config file
+    config file is a yaml file
+    '''
     @staticmethod
     def load_config(config_path='config.yaml'):
         with open(config_path, 'r') as file:

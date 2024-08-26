@@ -35,9 +35,16 @@ from process_observations import process_ob
 #     return content.strip()
 
 def gpt_agent(prompt, stop=["\n"], use_azure=False):
+    '''
+    LLM agent to interact with the environment.
+    Args:
+        prompt (list): List of dictionaries containing the role and content of the messages.
+        stop (list): List of stop sequences to stop the agent.
+        use_azure (bool): Flag to use the Azure API, defualt for Personal API.
+    '''
     client = get_openai_client(use_azure)
     
-    model = "gpt4o-mini" if use_azure else "gpt-4-turbo"
+    model = "gpt4o-turbo" if use_azure else "gpt-4-turbo"
     
     try:
         response = client.chat.completions.create(

@@ -23,7 +23,7 @@ class ExperimentRunner:
         )
         return method.run(num_games=experiment_config.get('num_games', 134))
 
-# In your main.py or wherever you set up experiments
+# set up experiments
 if __name__ == "__main__":
     base_config = Config.load_config('base_config.yaml')
     exp_config = Config.load_config('experiment_configs.yaml')

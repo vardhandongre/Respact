@@ -42,6 +42,11 @@ class BaseMethod:
         raise NotImplementedError("Subclasses must implement alfworld_run method")
 
     def run(self, num_games=134):
+        '''
+        Run the method for a specified number of games.
+        Args:
+            num_games (int): Number of games to run the method. Default is 134 (from original REACT paper).
+        '''
         rs = [0] * 6
         cnts = [0] * 6
         periodic_success_rates = []
@@ -194,6 +199,13 @@ class React(BaseMethod):
         self.method_prefix = 'react'
 
     def alfworld_run(self, prompt, ob='', to_print=True):
+        '''
+        Alfworld run method for the REACT method.
+        Args:
+            prompt (str): The prompt to be used for the method.
+            ob (str): The observation to be used for the method.
+            to_print (bool): Whether to print the output. Default is True.
+        '''
         init_prompt = prompt + ob + '\n>'
         prompt = ''
         if to_print:
@@ -229,6 +241,13 @@ class ReSpAct(BaseMethod):
         self.method_prefix = 'respact'
 
     def alfworld_run(self, prompt, to_print=True, ob=''):
+        '''
+        Alfworld run method for the ReSpAct method.
+        Args:
+            prompt (str): The prompt to be used for the method.
+            to_print (bool): Whether to print the output. Default is True.
+            ob (str): The observation to be used for the method.
+        '''
         init_prompt = prompt + ob + '\n'
         prompt = ''
         if to_print:

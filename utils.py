@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+# File I/O tools
 def load_yaml(file):
     with open(file) as f:
         return yaml.safe_load(f)
@@ -18,7 +20,7 @@ def load_txt(file):
     with open(file, 'r') as f:
         return f.read()
 
-
+# Print tools
 def pretty_print(data, in_format='json'):
     if in_format == 'json':
         print(json.dumps(data, indent=4))
@@ -38,6 +40,7 @@ def pretty_print_respact_prompt(data, prefixes):
         print(data[f'react_{v}_{n}'])
         print('\n')
 
+# Save tools
 def save_json(data, file):
     with open(file, 'w') as f:
         json.dump(data, f, indent=4) # indent=4 for pretty print
@@ -46,6 +49,8 @@ def save_dict_to_json(data, file):
     with open(file , 'w') as f:
         json.dump(data, f, indent=4)
 
+
+# Prompt tools
 # create combined prompt json file from each txt file
         
 def create_combined_prompt_json(data_path, output_path):
@@ -77,10 +82,11 @@ def get_openai_client(use_azure=True):
         )
     return client
     
-
+# Evaluation tools
 def calculate_success_rate(rs, cnts):
     return sum(rs) / sum(cnts) if sum(cnts) > 0 else 0
 
+# Viualization tools
 def visualize_results(rs, cnts, categories):
     success_rate = calculate_success_rate(rs, cnts)
     
@@ -112,12 +118,14 @@ def visualize_results(rs, cnts, categories):
     # Print overall success rate
     print(f"Overall Success Rate: {success_rate:.2%}")
 
+# Function to update results - reward and count
 def update_results(rs, cnts, category_index, reward):
     rs[category_index] += reward
     cnts[category_index] += 1
     return rs, cnts
 
 
+# Data analysis tools
 # function to analyze data - number of games files in each split, number of game files for each task type, number of trials per task
 
 def analyze_data(data_path):

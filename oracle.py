@@ -15,6 +15,13 @@ from alfworld.agents.utils.misc import add_task_to_grammar
 from alfworld.agents.environment.alfred_tw_env import AlfredExpert, AlfredDemangler, AlfredExpertType
 
 def oracle_support(game_file, expert = AlfredExpertType.PLANNER):
+    '''
+    Function to display the expert plan for a given game file
+    Args:
+        game_file (str): Path to the game file
+        expert (AlfredExpertType): Expert type to be used for the game
+    
+    '''
     expert = AlfredExpert(expert_type=expert)
     request_infos = textworld.EnvInfos(won=True, admissible_commands=True, score=True, max_score=True, intermediate_reward=True, extras=["expert_plan"])
     env_id = textworld.gym.register_game(game_file, request_infos,
