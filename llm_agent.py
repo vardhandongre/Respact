@@ -4,7 +4,12 @@ import sys
 import openai
 from utils import get_openai_client
 from process_observations import process_ob
-
+import transformers
+import torch
+import ollama
+from pydantic import BaseModel
+from openai import OpenAI
+from typing import Literal
 
 # def llm(prompt, stop=["\n"], use_azure=True):
 #     client = get_openai_client(use_azure)
@@ -34,22 +39,16 @@ from process_observations import process_ob
     
 #     return content.strip()
 
-def gpt_agent(prompt, stop=["\n"], use_azure=False):
-    '''
-    LLM agent to interact with the environment.
-    Args:
-        prompt (list): List of dictionaries containing the role and content of the messages.
-        stop (list): List of stop sequences to stop the agent.
-        use_azure (bool): Flag to use the Azure API, defualt for Personal API.
-    '''
+def gpt3_agent(prompt, stop=["\n"], use_azure=False):
+    message = [{"role": "system", "content": prompt}]
     client = get_openai_client(use_azure)
     
-    model = "gpt4o-turbo" if use_azure else "gpt-4-turbo"
+    model = "gpt-3.5-turbo-1106" if use_azure else "gpt-3.5-turbo-1106"
     
     try:
         response = client.chat.completions.create(
             model=model,
-            messages=prompt,
+            messages=message,
             temperature=0,
             max_tokens=100,
             top_p=1,
@@ -83,79 +82,147 @@ def gpt_agent(prompt, stop=["\n"], use_azure=False):
         print(f"An unexpected error occurred: {str(e)}")
         return ""
 
-# def alfworld_run(env, prompt, to_print=True, ob=''):
-#     init_prompt = prompt + ob + '\n>'
-#     prompt = ''
-#     if to_print:
-#         print(ob)
-#         sys.stdout.flush()
-#     for i in range(1, 30):
-#         message = [
-#             {"role":"system", "content":init_prompt + prompt}
-#         ]
-#         action = llm(message, stop=['\n']).strip()
+def gpt4_agent(prompt, stop=["\n"], use_azure=False):
+    message = [{"role": "system", "content": prompt}]
+    client = get_openai_client(use_azure)
+    
+    model = "gpt4o-mini" if use_azure else "gpt-4-turbo"
+    
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=message,
+            temperature=0,
+            max_tokens=100,
+            top_p=1,
+            frequency_penalty=0.0,
+            presence_penalty=0.0,
+            stop=stop
+        )
         
-#         if action.startswith('speak:') or action.startswith('> speak:'):
-#             # Remove the 'speak:' or '> speak:' prefix
-#             question = action.split(':', 1)[1].strip()
-#             print(f"Agent asks: {question}")
-#             user_response = input("Your response: ")
-#             observation = f"Human: {user_response}"
-#         else:
-#             observation, reward, done, info = env.step([action])
-#             print(f"Agent action: {action}")
-#             print(f"Observation: {observation}")
-#             print(f"Reward: {reward}")
-#             print(f"Done: {done}")
-#             print(f"Info: {info}")
-#             observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
-#             if action.startswith('think:') or action.startswith('> think:'):
-#                 observation = 'OK.'
+        if not response.choices:
+            print("Warning: API returned an empty response.")
+            return ""
         
-#         if to_print:
-#             print(f'Act {i}: {action}\nObs {i}: {observation}')
-#             sys.stdout.flush()
-#         prompt += f' {action}\n{observation}\n>'
-#         if done:
-#             return reward
-#     return 0
-
-# def alfworld_run(env, prompt, to_print=True, ob=''):
-#     init_prompt = prompt + ob + '\n'
-#     prompt = ''
-#     if to_print:
-#         print(ob)
-#         sys.stdout.flush()
-#     for i in range(1, 30):
-#         message = [
-#             {"role": "system", "content": init_prompt + prompt}
-#         ]
-#         action = llm(message, stop=['\n']).strip()
+        content = response.choices[0].message.content
         
-#         # Remove only the '>' prefix if present
-#         action = action.lstrip('> ')
+        if content is None:
+            print("Warning: API returned None as content.")
+            return ""
         
-#         if action.startswith('think:'):
-#             print(f"{action}")
-#             observation = 'OK.'
-#         elif action.startswith('speak:'):
-#             question = action[6:].strip()
-#             print(f"{action}")
-#             user_response = input("Human: ")
-#             observation = f"Human: {user_response}"
-#         else:
-#             observation, reward, done, info = env.step([action])
-#             observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
+        # Post-process to ensure we stop at the first occurrence of any stop sequence
+        for stop_seq in stop:
+            index = content.find(stop_seq)
+            if index != -1:
+                content = content[:index]
         
-#         if to_print:
-#             print(f'{observation}')
-#             sys.stdout.flush()
-        
-#         prompt += f'{action}\n{observation}\n'
-        
-#         if done:
-#             return reward
-#     return 0
+        return content.strip()
+    
+    except openai.OpenAIError as e:
+        print(f"An error occurred while calling the OpenAI API: {str(e)}")
+        return ""
+    except Exception as e:
+        print(f"An unexpected error occurred: {str(e)}")
+        return ""
     
 
+# gptagent experiment with structured output (run seperately)
+# Define the structure for our agent's response
+class RespactAgentAction(BaseModel):
+    action_type: Literal["thinking", "speaking", "acting"]
+    content: str
+
+class ReactAgentAction(BaseModel):
+    action_type: Literal["thinking", "acting"]
+    content: str
+
+def gpt4_structured_agent(prompt, format, use_azure=False):
+    client = get_openai_client(use_azure)
+    
+    model = "gpt-4o-2024-08-06" if use_azure else "gpt-4o-2024-08-06"
+    
+    try:
+        completion = client.beta.chat.completions.parse(
+            model=model,
+            messages=[
+                {"role": "system", "content": prompt},
+            ],
+            response_format=eval(format),
+            temperature=0,
+            max_tokens=100,
+            top_p=1,
+            frequency_penalty=0.0,
+            presence_penalty=0.0,
+        )
+        
+        agent_action = completion.choices[0].message.parsed
+        
+        return agent_action.action_type, agent_action.content
+    
+    except openai.OpenAIError as e:
+        print(f"An error occurred while calling the OpenAI API: {str(e)}")
+        return "error", str(e)
+    except Exception as e:
+        print(f"An unexpected error occurred: {str(e)}")
+        return "error", str(e)
+
+# 1. LLAMA 2
+# 2. LLAMA 3
+# 3. LLAMA 3.1
+
+# OLLAMA
+# def mistral_agent(prompt, stop=['\n'], model='mistral'):
+#     return ollama.generate(prompt, model)['response'].strip()
+
+# def llama3_agent(prompt, stop=['\n'], model='llama3'):
+#     return ollama.generate(prompt, model)['response'].strip()
+    
+def mistral_agent(prompt, stop=['\n'], model='mistral'):
+    try:
+        response = ollama.generate(model=model, prompt=prompt)
+        content = response['response']
+        
+        # Post-process to ensure we stop at the first occurrence of any stop sequence
+        for stop_seq in stop:
+            index = content.find(stop_seq)
+            if index != -1:
+                content = content[:index]
+        
+        return content.strip()
+    except Exception as e:
+        print(f"An error occurred while calling the Ollama API: {str(e)}")
+        return ""
+    
+def llama3_agent(prompt, stop=['\n'], model='llama3'):
+    try:
+        response = ollama.generate(model=model, prompt=prompt)
+        content = response['response']
+        
+        # Post-process to ensure we stop at the first occurrence of any stop sequence
+        for stop_seq in stop:
+            index = content.find(stop_seq)
+            if index != -1:
+                content = content[:index]
+        
+        return content.strip()
+    except Exception as e:
+        print(f"An error occurred while calling the Ollama API: {str(e)}")
+        return ""
+    
+def llama31_agent(prompt, stop=['\n'], model='llama3.1'):
+    try:
+        response = ollama.generate(model=model, prompt=prompt)
+        content = response['response']
+        
+        # Post-process to ensure we stop at the first occurrence of any stop sequence
+        for stop_seq in stop:
+            index = content.find(stop_seq)
+            if index != -1:
+                content = content[:index]
+        
+        return content.strip()
+    except Exception as e:
+        print(f"An error occurred while calling the Ollama API: {str(e)}")
+        return ""
+    
 

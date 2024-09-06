@@ -2,8 +2,10 @@ You are in the middle of a room. Looking quickly around you, you see a cabinet 1
 Your task is to: cool some pan and put it in stoveburner.
 > think: To solve the task, I need to find and take a pan, then cool it with fridge, then put it in stoveburner.
 OK.
-> think: First I need to find a pan. An pan is more likely to appear in stoveburner (1-4), sinkbasin (1), diningtable (1), countertop (1-2), cabinet (1-16), drawer (1-5). I can check one by one, starting with stoveburner 1.
+> think: First I need to find a pan. An pan is more likely to appear in stoveburner (1-4), sinkbasin (1), diningtable (1), countertop (1-2), cabinet (1-16), drawer (1-5). Let me ask where I should start first.
 OK.
+> speak: An pan is more likely to appear in stoveburner (1-4), sinkbasin (1), diningtable (1), countertop (1-2), cabinet (1-16), drawer (1-5). Where should I look for the pan first?
+Can you please check the stoveburners?
 >go to stoveburner 1
 On the stoveburner 1, you see nothing.
 >go to stoveburner 2
@@ -26,4 +28,3 @@ OK.
 On the stoveburner 1, you see nothing.
 > put pan 1 in/on stoveburner 1
 You put the pan 1 in/on the stoveburner 1.
-

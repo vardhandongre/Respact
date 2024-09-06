@@ -2,8 +2,10 @@ You are in the middle of a room. Looking quickly around you, you see a bathtubba
 Your task is to: clean some soapbar and put it in toilet.
 > think: To solve the task, I need to find and take a soapbar, then clean it with sinkbasin, then put it in toilet.
 OK.
-> think: First I need to find a soapbar. A soapbar is more likely to appear in toilet (1), bathtubbasin (1), sinkbasin (1), shelf (1-3), garbagecan (1). I can check one by one, starting with toilet 1.
+> think: First I need to find a soapbar. A soapbar is more likely to appear in toilet (1), bathtubbasin (1), sinkbasin (1), shelf (1-3), garbagecan (1). Let me ask where I should start first.
 OK.
+> speak: I think a soapbar is more likely to appear in toilet (1), bathtubbasin (1), sinkbasin (1), shelf (1-3), garbagecan (1). Where should I look for the soapbar first?
+Please look for the soapbar in the toilet first.
 > go to toilet 1
 On the toilet 1, you see a soapbar 4, and a soapbar 3.
 > think: Now I find a soapbar (4). Next, I need to take it.
@@ -22,4 +24,3 @@ OK.
 On the toilet 1, you see a soapbar 3.
 > put soapbar 4 in/on toilet 1
 You put the soapbar 4 in/on the toilet 1.
-

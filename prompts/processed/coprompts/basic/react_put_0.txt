@@ -2,10 +2,10 @@ You are in the middle of a room. Looking quickly around you, you see a cabinet 4
 Your task is to: put some spraybottle on toilet.
 > think: To solve the task, I need to find and take a sparybottle, then put it on toilet.
 OK.
-> think: First I need to find a spraybottle. A spraybottle is more likely to appear in cabinet (1-4), countertop (1), toilet (1), sinkbasin (1-2), garbagecan (1). I can check one by one, starting with cabinet 1.
+> think: First I need to find a spraybottle. A spraybottle is more likely to appear in cabinet (1-4), countertop (1), toilet (1), sinkbasin (1-2), garbagecan (1). Let me ask where to look for the spraybottle first.
 OK.
-> go to cabinet 1
-On the cabinet 1, you see a cloth 1, a soapbar 1, a soapbottle 1.
+> speak: I need to find a spraybottle. A spraybottle is more likely to appear in cabinet (1-4), countertop (1), toilet (1), sinkbasin (1-2), garbagecan (1). Where do you suggest I should look for the spraybottle first?
+Can you please check the cabinet 2
 > go to cabinet 2
 The cabinet 2 is closed.
 > open cabinet 2
@@ -19,4 +19,3 @@ OK.
 On the toilet 1, you see a soapbottle 2.
 > put spraybottle 2 in/on toilet 1
 You put the spraybottle 2 in/on the toilet 1.
-

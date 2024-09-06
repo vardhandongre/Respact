@@ -6,8 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
-# File I/O tools
 def load_yaml(file):
     with open(file) as f:
         return yaml.safe_load(f)
@@ -20,7 +18,7 @@ def load_txt(file):
     with open(file, 'r') as f:
         return f.read()
 
-# Print tools
+
 def pretty_print(data, in_format='json'):
     if in_format == 'json':
         print(json.dumps(data, indent=4))
@@ -40,7 +38,23 @@ def pretty_print_respact_prompt(data, prefixes):
         print(data[f'react_{v}_{n}'])
         print('\n')
 
-# Save tools
+def color_text(text, color):
+    colors = {
+        "red": "\033[91m",
+        "green": "\033[92m",
+        "yellow": "\033[93m",
+        "blue": "\033[94m",
+        "magenta": "\033[95m",
+        "cyan": "\033[96m",
+        "white": "\033[97m",
+        "reset": "\033[0m"  # Resets the color to default
+    }
+    return colors[color] + text + colors["reset"]
+
+# colored print
+def cprint(text, color):
+    print(color_text(text, color))
+
 def save_json(data, file):
     with open(file, 'w') as f:
         json.dump(data, f, indent=4) # indent=4 for pretty print
@@ -49,8 +63,6 @@ def save_dict_to_json(data, file):
     with open(file , 'w') as f:
         json.dump(data, f, indent=4)
 
-
-# Prompt tools
 # create combined prompt json file from each txt file
         
 def create_combined_prompt_json(data_path, output_path):
@@ -82,12 +94,13 @@ def get_openai_client(use_azure=True):
         )
     return client
     
-# Evaluation tools
+
 def calculate_success_rate(rs, cnts):
     return sum(rs) / sum(cnts) if sum(cnts) > 0 else 0
 
-# Viualization tools
-def visualize_results(rs, cnts, categories):
+def visualize_results(method, exp_name, name, rs, cnts, categories):
+    # to do: pass experiment name as argument to save results to a folder with the experiment name
+    name = name.replace('/', '_')
     success_rate = calculate_success_rate(rs, cnts)
     
     # 1. Bar plot of rewards by category
@@ -98,14 +111,16 @@ def visualize_results(rs, cnts, categories):
     plt.ylabel('Total Reward')
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.savefig(f'results/{method}/{exp_name}_{name}_rewards_by_category.png')
 
     # 2. Pie chart of task distribution
     plt.figure(figsize=(10, 10))
     plt.pie(cnts, labels=categories, autopct='%1.1f%%', startangle=90)
     plt.title('Distribution of Tasks Across Categories')
     plt.axis('equal')
-    plt.show()
+    # plt.show()
+    plt.savefig(f'results/{method}/{exp_name}_{name}_task_distribution.png')
 
     # 3. Heatmap of success rate by category
     success_rates = [r/c if c > 0 else 0 for r, c in zip(rs, cnts)]
@@ -113,24 +128,27 @@ def visualize_results(rs, cnts, categories):
     sns.heatmap([success_rates], annot=True, xticklabels=categories, yticklabels=['Success Rate'], cmap='YlGnBu')
     plt.title('Success Rate by Category')
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    # Save the success rates to a JSON file
+    # save_json(dict(zip(categories, success_rates)), f'results/{exp_name}_{name}_success_rates.json')
+    # Save plots to files
+    plt.savefig(f'results/{method}/{exp_name}_{name}_success_rate_by_category.png')
+
 
     # Print overall success rate
-    print(f"Overall Success Rate: {success_rate:.2%}")
+    cprint(f"Overall Success Rate: {success_rate:.2%}", 'red')
 
-# Function to update results - reward and count
 def update_results(rs, cnts, category_index, reward):
     rs[category_index] += reward
     cnts[category_index] += 1
     return rs, cnts
 
 
-# Data analysis tools
 # function to analyze data - number of games files in each split, number of game files for each task type, number of trials per task
 
 def analyze_data(data_path):
     splits = os.listdir(data_path) 
-    task_categories = ['pick_and_place_with_movable_recep', 'pick_clean_then_place_in_recep', 'pick_heat_then_place_in_recep', 'pick_cool_then_place_in_recep', 'look_at_obj_in_light', 'pick_two_obj_and_place']
+    task_categories = ['pick_and_place_simple', 'pick_clean_then_place_in_recep', 'pick_heat_then_place_in_recep', 'pick_cool_then_place_in_recep', 'look_at_obj_in_light', 'pick_two_obj_and_place']
     num_games = {}
     num_files_per_task_per_split = {}
     file_path_per_task_per_split = {}
