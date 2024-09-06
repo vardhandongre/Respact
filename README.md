@@ -29,5 +29,6 @@ alfworld-download
 Use `--extra` to download pre-trained checkpoints and seq2seq data.
 
 ## Run ReSpAct Experiments
-The  `--extra` to download pre-trained checkpoints and seq2seq data.
+The experiments are controlled via two yaml files, `base_config.yaml` to control the alfworld games and `experiment_configs.yaml` for the respact experimentation. 
+
     python main.py
