@@ -29,5 +29,5 @@ alfworld-download
 Use `--extra` to download pre-trained checkpoints and seq2seq data.
 
 ## Run ReSpAct Experiments
-
+The  `--extra` to download pre-trained checkpoints and seq2seq data.
     python main.py
