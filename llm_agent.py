@@ -82,7 +82,7 @@ def gpt3_agent(prompt, stop=["\n"], use_azure=False):
         print(f"An unexpected error occurred: {str(e)}")
         return ""
 
-def gpt4_agent(prompt, stop=["\n"], use_azure=False):
+def gpt4_agent(prompt, stop=["\n"], use_azure=True):
     message = [{"role": "system", "content": prompt}]
     client = get_openai_client(use_azure)
     

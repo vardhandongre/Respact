@@ -482,86 +482,9 @@ class ReSpAct(BaseMethod):
         self.method_prefix = 'respact'
         self.agent = agent
 
-    def alfworld_run(self, exp_name, name, prompt, to_print=True, ob=''):
-        init_prompt = prompt + ob + '\n'
-        context = ''
-        action_observation_pairs = {}
-        j = 0
-        action_observation_pairs[j] = ob
-        if to_print:
-            print(ob)
-            sys.stdout.flush()
-        
-        for i in range(1, 30):
-            message = init_prompt + context
-            action_type, content = eval(self.agent)(message, format = 'RespactAgentAction')  # Assuming self.agent is now gpt4_structured_agent
-            cprint(f'Response: {content}', 'yellow')
-            
-            # Initialize done and reward
-            done = False
-            reward = 0
-            
-            if action_type == "thinking":
-                observation = 'OK.'
-                cprint(f'🤔 Thinking: {content}', 'green')
-            elif action_type == "speaking":
-                cprint(f"💬 Speaking: {content}", 'cyan')
-                user_response = input("Human: ")
-                observation = f"Human: {user_response}"
-            elif action_type == "acting":
-                cprint(f'🔄 Acting: {content}', 'blue')
-                # print(f'Act {i}: {content}')
-                observation, reward, done, info = self.env.step([content])
-                observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
-            else:
-                observation = "Invalid response format. Please use the correct action type."
-            
-            if to_print:
-                cprint(f'Obs {i}: {observation}', 'red')
-                j += 1
-                action_observation_pairs[j] = f'Step {i}:\n{action_type.capitalize()}: {content}\nObs {i}: {observation}'
-                sys.stdout.flush()
-            
-            context += f'{action_type.capitalize()}: {content}\n{observation}\n'
-            
-            if done:
-                # Create the directory path
-                dir_path = f'results/{self.__class__.__name__}/{exp_name}'
-                os.makedirs(dir_path, exist_ok=True)
-
-                # Sanitize the filename
-                sanitized_name = ''.join(c for c in name if c.isalnum() or c in ('-', '_'))
-                file_path = f'{dir_path}/{sanitized_name}_action_observation_pairs.txt'
-
-                try:
-                    with open(file_path, 'w') as f:
-                        for key, value in action_observation_pairs.items():
-                            f.write(f'{key}: {value}\n')
-                except IOError as e:
-                    print(f"An error occurred while writing to file: {e}")
-
-                return reward
-        # Create the directory path
-        dir_path = f'results/{self.__class__.__name__}/{exp_name}'
-        os.makedirs(dir_path, exist_ok=True)
-
-        # Sanitize the filename
-        sanitized_name = ''.join(c for c in name if c.isalnum() or c in ('-', '_'))
-        file_path = f'{dir_path}/{sanitized_name}_action_observation_pairs_failed.txt'
-
-        try:
-            with open(file_path, 'w') as f:
-                for key, value in action_observation_pairs.items():
-                    f.write(f'{key}: {value}\n')
-        except IOError as e:
-            print(f"An error occurred while writing to file: {e}")
-        return 0
-
-    ###### Not expecting structured response from the agent
-
     # def alfworld_run(self, exp_name, name, prompt, to_print=True, ob=''):
     #     init_prompt = prompt + ob + '\n'
-    #     prompt = ''
+    #     context = ''
     #     action_observation_pairs = {}
     #     j = 0
     #     action_observation_pairs[j] = ob
@@ -570,50 +493,127 @@ class ReSpAct(BaseMethod):
     #         sys.stdout.flush()
         
     #     for i in range(1, 30):
-    #         # message = [
-    #         #     {"role": "system", "content": init_prompt + prompt}
-    #         # ]
-    #         message = init_prompt + prompt
-    #         response = eval(self.agent)(message, stop=['\n\n']).strip()
-    #         cprint(f'Response: {response}', 'yellow')
-    #         thinking, speaking, acting = self.parse_agent_response(response)
-    #         cprint(f'Thinking: {thinking}', 'green')
-    #         cprint(f'Speaking: {speaking}', 'cyan')
-    #         cprint(f'Acting: {acting}', 'blue')
+    #         message = init_prompt + context
+    #         action_type, content = eval(self.agent)(message, format = 'RespactAgentAction')  # Assuming self.agent is now gpt4_structured_agent
+    #         cprint(f'Response: {content}', 'yellow')
+            
     #         # Initialize done and reward
     #         done = False
     #         reward = 0
             
-    #         if thinking:
+    #         if action_type == "thinking":
     #             observation = 'OK.'
-    #         elif speaking:
-    #             cprint(f"💬 Speaking: {speaking}", 'cyan')
+    #             cprint(f'🤔 Thinking: {content}', 'green')
+    #         elif action_type == "speaking":
+    #             cprint(f"💬 Speaking: {content}", 'cyan')
     #             user_response = input("Human: ")
     #             observation = f"Human: {user_response}"
-    #         elif acting:
-    #             observation, reward, done, info = self.env.step([acting])
+    #         elif action_type == "acting":
+    #             cprint(f'🔄 Acting: {content}', 'blue')
+    #             # print(f'Act {i}: {content}')
+    #             observation, reward, done, info = self.env.step([content])
     #             observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
     #         else:
-    #             observation = "Invalid response format. Please use the correct prefix."
+    #             observation = "Invalid response format. Please use the correct action type."
             
     #         if to_print:
-    #             # print(f'Step {i}:')
-    #             if thinking: cprint(f'🤔 Thinking: {thinking}', 'green')
-    #             if speaking: cprint(f'💬 Speaking: {speaking}', 'cyan')
-    #             if acting: cprint(f'🔄 Acting: {acting}', 'blue')
     #             cprint(f'Obs {i}: {observation}', 'red')
     #             j += 1
-    #             action_observation_pairs[j] = f'Step {i}:\n{response}\nObs {i}: {observation}'
+    #             action_observation_pairs[j] = f'Step {i}:\n{action_type.capitalize()}: {content}\nObs {i}: {observation}'
     #             sys.stdout.flush()
             
-    #         prompt += f'{response}\n{observation}\n'
+    #         context += f'{action_type.capitalize()}: {content}\n{observation}\n'
             
     #         if done:
-    #             with open(f'results/Respact/{exp_name}/{name}_action_observation_pairs.txt', 'w') as f:
-    #                 for key, value in action_observation_pairs.items():
-    #                     f.write(f'{key}: {value}\n')
+    #             # Create the directory path
+    #             dir_path = f'results/{self.__class__.__name__}/{exp_name}'
+    #             os.makedirs(dir_path, exist_ok=True)
+
+    #             # Sanitize the filename
+    #             sanitized_name = ''.join(c for c in name if c.isalnum() or c in ('-', '_'))
+    #             file_path = f'{dir_path}/{sanitized_name}_action_observation_pairs.txt'
+
+    #             try:
+    #                 with open(file_path, 'w') as f:
+    #                     for key, value in action_observation_pairs.items():
+    #                         f.write(f'{key}: {value}\n')
+    #             except IOError as e:
+    #                 print(f"An error occurred while writing to file: {e}")
+
     #             return reward
+    #     # Create the directory path
+    #     dir_path = f'results/{self.__class__.__name__}/{exp_name}'
+    #     os.makedirs(dir_path, exist_ok=True)
+
+    #     # Sanitize the filename
+    #     sanitized_name = ''.join(c for c in name if c.isalnum() or c in ('-', '_'))
+    #     file_path = f'{dir_path}/{sanitized_name}_action_observation_pairs_failed.txt'
+
+    #     try:
+    #         with open(file_path, 'w') as f:
+    #             for key, value in action_observation_pairs.items():
+    #                 f.write(f'{key}: {value}\n')
+    #     except IOError as e:
+    #         print(f"An error occurred while writing to file: {e}")
     #     return 0
+
+    ###### Not expecting structured response from the agent
+
+    def alfworld_run(self, exp_name, name, prompt, to_print=True, ob=''):
+        init_prompt = prompt + ob + '\n'
+        prompt = ''
+        action_observation_pairs = {}
+        j = 0
+        action_observation_pairs[j] = ob
+        if to_print:
+            print(ob)
+            sys.stdout.flush()
+        
+        for i in range(1, 30):
+            # message = [
+            #     {"role": "system", "content": init_prompt + prompt}
+            # ]
+            message = init_prompt + prompt
+            response = eval(self.agent)(message, stop=['\n\n']).strip()
+            cprint(f'Response: {response}', 'yellow')
+            thinking, speaking, acting = self.parse_agent_response(response)
+            cprint(f'Thinking: {thinking}', 'green')
+            cprint(f'Speaking: {speaking}', 'cyan')
+            cprint(f'Acting: {acting}', 'blue')
+            # Initialize done and reward
+            done = False
+            reward = 0
+            
+            if thinking:
+                observation = 'OK.'
+            elif speaking:
+                cprint(f"💬 Speaking: {speaking}", 'cyan')
+                user_response = input("Human: ")
+                observation = f"Human: {user_response}"
+            elif acting:
+                observation, reward, done, info = self.env.step([acting])
+                observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
+            else:
+                observation = "Invalid response format. Please use the correct prefix."
+            
+            if to_print:
+                # print(f'Step {i}:')
+                if thinking: cprint(f'🤔 Thinking: {thinking}', 'green')
+                if speaking: cprint(f'💬 Speaking: {speaking}', 'cyan')
+                if acting: cprint(f'🔄 Acting: {acting}', 'blue')
+                cprint(f'Obs {i}: {observation}', 'red')
+                j += 1
+                action_observation_pairs[j] = f'Step {i}:\n{response}\nObs {i}: {observation}'
+                sys.stdout.flush()
+            
+            prompt += f'{response}\n{observation}\n'
+            
+            if done:
+                with open(f'results/Respact/{exp_name}/{name}_action_observation_pairs.txt', 'w') as f:
+                    for key, value in action_observation_pairs.items():
+                        f.write(f'{key}: {value}\n')
+                return reward
+        return 0
     
 
 
