@@ -2,6 +2,7 @@ import os
 import json
 import yaml 
 from openai import OpenAI, AzureOpenAI
+
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -81,12 +82,12 @@ def load_combined_prompt_json(file):
 
 
 # Openai tools
-def get_openai_client(use_azure=True):
+def get_openai_client(use_azure=False):
     if use_azure:
         client = AzureOpenAI(
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             api_key=os.getenv("AZURE_OPENAI_KEY"),
-            api_version="2024-05-01-preview"
+            api_version="2023-03-15-preview"
         )
     else:
         client = OpenAI(
@@ -181,4 +182,50 @@ def analyze_data(data_path):
     return num_games, num_files_per_task_per_split, file_path_per_task_per_split
 
 
-            
+## Webshop Tools            
+import matplotlib.pyplot as plt
+from collections import defaultdict
+import numpy as np
+
+class MetricsTracker:
+    def __init__(self):
+        self.episode_rewards = []
+        self.success_rate = []
+        self.failure_rate = []
+        self.cumulative_avg_reward = []
+
+    def update(self, reward, success, failure):
+        self.episode_rewards.append(reward)
+        self.success_rate.append(int(success))
+        self.failure_rate.append(int(failure))
+        self.cumulative_avg_reward.append(np.mean(self.episode_rewards))
+
+    def plot_metrics(self):
+        episodes = range(1, len(self.episode_rewards) + 1)
+
+        fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 15))
+
+        # Plot episode rewards
+        ax1.plot(episodes, self.episode_rewards, label='Episode Reward')
+        ax1.plot(episodes, self.cumulative_avg_reward, label='Cumulative Average Reward')
+        ax1.set_xlabel('Episode')
+        ax1.set_ylabel('Reward')
+        ax1.set_title('Episode Rewards and Cumulative Average')
+        ax1.legend()
+
+        # Plot success rate
+        ax2.plot(episodes, np.cumsum(self.success_rate) / episodes, label='Success Rate')
+        ax2.set_xlabel('Episode')
+        ax2.set_ylabel('Success Rate')
+        ax2.set_title('Cumulative Success Rate')
+        ax2.legend()
+
+        # Plot failure rate
+        ax3.plot(episodes, np.cumsum(self.failure_rate) / episodes, label='Failure Rate')
+        ax3.set_xlabel('Episode')
+        ax3.set_ylabel('Failure Rate')
+        ax3.set_title('Cumulative Failure Rate')
+        ax3.legend()
+
+        plt.tight_layout()
+        plt.show()
