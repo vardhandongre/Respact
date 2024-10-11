@@ -23,149 +23,42 @@ env:
   type: "AlfredTWEnv"
   
 experiments:
+  Respact-Org:
+      name: 'helpful-user-train' 
+      split: 'eval_out_of_distribution'
+      method: 'respact'
+      agent: 'gpt4_agent'
+      main_prompt_file: None
+      method_prompt_file: 'prompts/respact_alfred.json'
+      oracle: True
+      version: 'original'
 
-  experiment_0_case_1: # Case-1: Helpful Perfect User
+  Respact-Opt:
     name: 'helpful-user-train' 
-    split: 'train'
+    split: 'eval_out_of_distribution'
     method: 'respact'
     agent: 'gpt4_agent'
-    main_prompt_file: prompts/main_prompt_opt.txt
+    main_prompt_file: prompts/main_prompt_respact.txt
     method_prompt_file: 'prompts/respact_alfred_updated.json'
     oracle: True
+    version: 'original'
 
-  experiment_0_case_1_1: # Case-1_1: Helpful Perfect User with GPT-3
-    name: 'helpful-user-train' 
-    split: 'train'
-    method: 'respact'
-    agent: 'gpt3_agent'
-    main_prompt_file: prompts/main_prompt.txt
-    method_prompt_file: 'prompts/respact_alfred.json'
-    oracle: True
+  React-Org_01_P:  
+    name: 'React' 
+    split: 'eval_out_of_distribution'
+    method: 'React'
+    agent: 'gpt4_agent'
+    main_prompt_file: None
+    method_prompt_file: 'prompts/alfworld_3prompts.json'
+    oracle: False
+    version: 'original'
 
-  experiment_0_case_1_2: # Case-1_2: Helpful Perfect User with LLAMA 3-70B Instruct
-    name: 'helpful-user-train' 
-    split: 'train'
-    method: 'respact'
-    agent: 'llama3_agent'
-    main_prompt_file: prompts/main_prompt.txt
-    method_prompt_file: 'prompts/respact_alfred.json'
-    oracle: True
-
-  experiment_0_case_1_3: # Case-1_3: Helpful Perfect User with LLAMA 3.1 Instruct
-    name: 'helpful-user-train' 
-    split: 'train'
-    method: 'respact'
-    agent: 'llama31_agent'
-    main_prompt_file: prompts/main_prompt.txt
-    method_prompt_file: 'prompts/respact_alfred.json'
-    oracle: True
-
-  experiment_0_case_1_4: # Case-1_4: Helpful Perfect User with MISTRAL 7B
-    name: 'helpful-user-train' 
-    split: 'train'
-    method: 'respact'
-    agent: 'mistral_agent'
-    main_prompt_file: prompts/main_prompt.txt
-    method_prompt_file: 'prompts/respact_alfred.json'
-    oracle: True
-
-  experiment_1_case_1:  
-    name: 'helpful-user-train' 
-    split: 'train'
+  React-Opt_21:  
+    name: 'React' 
+    split: 'eval_out_of_distribution'
     method: 'React'
     agent: 'gpt4_agent'
     main_prompt_file: prompts/main_prompt.txt
     method_prompt_file: 'prompts/alfworld_3prompts.json'
     oracle: False
-
-  experiment_1_case_1_1: # Case-1_1: Helpful Perfect User with GPT-3
-    name: 'helpful-user-train' 
-    split: 'train'
-    method: 'React'
-    agent: 'gpt3_agent'
-    main_prompt_file: prompts/main_prompt.txt
-    method_prompt_file: 'prompts/alfworld_3prompts.json'
-    oracle: False
-
-  experiment_1_case_1_2: # Case-1_2: Helpful Perfect User with LLAMA 3-70B Instruct
-    name: 'helpful-user-train' 
-    split: 'train'
-    method: 'React'
-    agent: 'llama3_agent'
-    main_prompt_file: prompts/main_prompt.txt
-    method_prompt_file: 'prompts/alfworld_3prompts.json'
-    oracle: False
-
-  experiment_1_case_1_3: # Case-1_3: Helpful Perfect User with LLAMA 3.1 Instruct
-    name: 'helpful-user-train' 
-    split: 'train'
-    method: 'React'
-    agent: 'llama31_agent'
-    main_prompt_file: prompts/main_prompt.txt
-    method_prompt_file: 'prompts/alfworld_3prompts.json'
-    oracle: False
-
-  experiment_1_case_1_4: # Case-1_4: Helpful Perfect User with MISTRAL 7B
-    name: 'helpful-user-train' 
-    split: 'train'
-    method: 'React'
-    agent: 'mistral_agent'
-    main_prompt_file: 'prompts/react_main_prompt_opt.txt'
-    method_prompt_file: 'prompts/alfworld_3prompts_updated.json'
-    oracle: False
-
-  experiment_0_case_2:
-    name: 'noisy-user-train' 
-    split: 'train'
-    method: 'respact'
-    agent: 'gpt4_agent'
-    main_prompt_file: prompts/main_prompt.txt
-    prompt_file: 'prompts/respact_alfred.json'
-    oracle: True
-
-  experiment_0_case_3:
-    name: 'unhelpful-user-train' 
-    split: 'train'
-    method: 'respact'
-    agent: 'gpt4_agent'
-    main_prompt_file: prompts/main_prompt.txt
-    prompt_file: 'prompts/alfworld_3prompts.json'
-    oracle: False
-
-  experiment_2_case_1:
-    name: 'better-speak-acts-train' 
-    split: 'train'
-    method: 'respact'
-    agent: 'gpt4_agent'
-    main_prompt_file: prompts/main_prompt.txt
-    prompt_file: 'prompts/respact_alfred.json'
-    oracle: True
-
-  experiment_00_case_1: # Case-1: Helpful Perfect User
-    name: 'helpful-user-train' 
-    split: 'train'
-    method: 'respact'
-    agent: 'gpt4_structured_agent'
-    main_prompt_file: prompts/main_prompt_opt.txt
-    method_prompt_file: 'prompts/respact_alfred_updated.json'
-    oracle: True
-  
-  experiment_01_case_1: # Case-1: Helpful Perfect User
-    name: 'helpful-user-train' 
-    split: 'train'
-    method: 'React'
-    agent: 'gpt4_structured_agent'
-    main_prompt_file: 'prompts/main_prompt_opt.txt'
-    method_prompt_file: 'prompts/alfworld_3prompts_updated.json'
-    oracle: False
-
-
-run_configs:
-  selected_experiments:
-    - experiment_1_case_1_4
-   
-    
-
-
-
-
+    version: 'original'
