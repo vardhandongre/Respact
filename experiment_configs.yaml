@@ -62,3 +62,19 @@ experiments:
     method_prompt_file: 'prompts/alfworld_3prompts.json'
     oracle: False
     version: 'original'
+
+
+  
+
+
+run_configs:
+  selected_experiments:
+    - Respact-Org
+  use_azure: False
+  save_results: True
+   
+    
+
+
+
+
