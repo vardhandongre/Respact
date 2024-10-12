@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from utils import calculate_success_rate, visualize_results, update_results, cprint
 
-
+from user_sim import LLMUserAgent
 
 ######## Old Method class for React and ReSpAct to be used with main_prompt_file and method_prompt_file
         
@@ -63,17 +63,17 @@ class BaseMethod:
             # Add oracle support if specified in the config
             if self.use_oracle:
                 game_file = info['extra.gamefile'][0] # Get the game file path
-                oracle_support(game_file)
+                oracle_info = oracle_support(game_file)
 
             for i, (k, v) in enumerate(self.prefixes.items()):
                 if name.startswith(k):
                     full_prompt = (self.main_prompt + 
                                    'Interact with a household to solve a task. Here are 2 examples.\n' + 
-                                   self.method_prompts[f'{self.method_prefix}_{v}_0'] + 
                                    self.method_prompts[f'{self.method_prefix}_{v}_1'] + 
+                                   self.method_prompts[f'{self.method_prefix}_{v}_2'] + 
                                    '\nHere is the task.\n')
                     print(k, v)
-                    r = self.alfworld_run(exp_name, use_azure, name, full_prompt, ob=ob)
+                    r = self.alfworld_run(exp_name, use_azure, name, oracle_info, full_prompt, ob=ob)
                     rs, cnts = update_results(rs, cnts, i, r)
                     break
 
@@ -203,8 +203,16 @@ class ReSpAct(BaseMethod):
         super().__init__(method_name, main_prompt_file, method_prompt_file, env, use_oracle)
         self.method_prefix = 'respact'
         self.agent = agent
+        self.user_simulator = None  # Will be initialized in alfworld_run
 
-    def alfworld_run(self, exp_name, use_azure, name, prompt, to_print=True, ob=''):
+    def alfworld_run(self, exp_name, use_azure, name, oracle_info, prompt, to_print=True, ob=''):
+        # Initialize the user simulator
+        # oracle_info = oracle_support(self.env.game_files[0]) if self.use_oracle else ""
+        cprint(f"Oracle Information: {oracle_info}", 'red')
+        
+        user_simulator_prompt = 'prompts/user_sim.txt' # Load the user simulator prompt
+        self.user_simulator = LLMUserAgent(oracle_info, self.agent, user_simulator_prompt)
+
         init_prompt = prompt + ob + '\n'
         prompt = ''
         # Dictionary to store the action and observation pairs
@@ -235,9 +243,12 @@ class ReSpAct(BaseMethod):
             elif action.startswith('speak:'):
                 question = action[6:].strip() # Remove the 'speak:' prefix
                 print(f"{action}")
-                user_response = input("Human: ")
-                observation = f"Human: {user_response}"
-            else:
+                # user_response = input("Human: ")
+                # observation = f"Human: {user_response}" #Human Evaluation
+                user_response = self.user_simulator.user_response(question)
+                observation = f"Human: {user_response}" #User Simulator
+            elif action.startswith('act:'):
+                action = action[4:].strip() # Remove the 'act:' prefix
                 observation, reward, done, info = self.env.step([action])
                 observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
             
@@ -248,24 +259,23 @@ class ReSpAct(BaseMethod):
                 sys.stdout.flush()
             
             prompt += f'{action}\n{observation}\n'
+
+            # Update user simulator state
+            self.user_simulator.update_state(action, observation)
             
             if done:
-                dir_path = f'results/{self.__class__.__name__}/{exp_name}'
-                os.makedirs(dir_path, exist_ok=True)
-                sanitized_name = ''.join(c for c in name if c.isalnum() or c in ('-', '_'))
-                file_path = f'{dir_path}/{sanitized_name}_action_observation_pairs.txt'
-                
-                try:
-                    with open(file_path, 'w') as f:
-                        for key, value in action_observation_pairs.items():
-                            f.write(f'{key}: {value}\n')
-                except IOError as e:
-                    print(f"An error occurred while writing to file: {e}")
+                self._save_action_observation_pairs(exp_name, name, action_observation_pairs)
                 return reward
+        
+        self._save_action_observation_pairs(exp_name, name, action_observation_pairs, failed=True)
+        return 0
+
+    def _save_action_observation_pairs(self, exp_name, name, action_observation_pairs, failed=False):
         dir_path = f'results/{self.__class__.__name__}/{exp_name}'
         os.makedirs(dir_path, exist_ok=True)
         sanitized_name = ''.join(c for c in name if c.isalnum() or c in ('-', '_'))
-        file_path = f'{dir_path}/{sanitized_name}_action_observation_pairs_failed.txt'
+        status = '_failed' if failed else ''
+        file_path = f'{dir_path}/{sanitized_name}_action_observation_pairs{status}.txt'
         
         try:
             with open(file_path, 'w') as f:
@@ -273,7 +283,6 @@ class ReSpAct(BaseMethod):
                     f.write(f'{key}: {value}\n')
         except IOError as e:
             print(f"An error occurred while writing to file: {e}")
-        return 0
     
 def get_old_method(method_name, agent, main_prompt_file, method_prompt_file, env, use_oracle):
     print("Running original method")

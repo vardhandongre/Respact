@@ -39,21 +39,11 @@ experiments:
     method: 'respact'
     agent: 'gpt4_agent'
     main_prompt_file: prompts/main_prompt_respact.txt
-    method_prompt_file: 'prompts/respact_alfred_updated.json'
+    method_prompt_file: 'prompts/respact_alfred_old.json'
     oracle: True
     version: 'original'
 
-  React-Org_01_P:  
-    name: 'React' 
-    split: 'eval_out_of_distribution'
-    method: 'React'
-    agent: 'gpt4_agent'
-    main_prompt_file: None
-    method_prompt_file: 'prompts/alfworld_3prompts.json'
-    oracle: False
-    version: 'original'
-
-  React-Opt_21:  
+  React-Opt:  
     name: 'React' 
     split: 'eval_out_of_distribution'
     method: 'React'
@@ -69,8 +59,8 @@ experiments:
 
 run_configs:
   selected_experiments:
-    - Respact-Org
-  use_azure: False
+    - Respact-Opt
+  use_azure: True
   save_results: True
    
     
