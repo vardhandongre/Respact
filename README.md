@@ -104,8 +104,17 @@ Launch the `WebShop` webpage:
 ```
 The site should then be viewable in the browser. Go to http://localhost:3000/ABC, where you should land on the search home page with a random instruction.
 
+## Run ReSpAct Experiments
+```bash
+export OPENAI_API_KEY=<key>
+```
+For Azure:
+```bash
+export AZURE_OPENAI_ENDPOINT=<endpoint>
+export AZURE_OPENAI_KEY=<key>
+```
 
-
+To-Do
 
 
 ## MultiWOZ
