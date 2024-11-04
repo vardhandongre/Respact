@@ -11,7 +11,7 @@
 This repository contains code for reproducing results. If you find this work useful in your research, please cite:
 
 ```
-@inproceedings{yao2022webshop,
+@inproceedings{,
   bibtex_show = {true},
   title = {ReSpAct: Harmonizing Reasoning, Speaking, and Acting Towards Building Large Language Model-Based Conversational AI Agents},
   author = {},
