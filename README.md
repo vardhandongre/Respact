@@ -8,7 +8,7 @@
   <img src="assets/diagram.gif">
 </p>
 
-This repository contains code for reproducing results. If you find this work useful in your research, please cite:
+This repository contains code for ReSpAct. If you find this work useful in your research, please cite:
 
 ```
 @misc{dongre2024respactharmonizingreasoningspeaking,
