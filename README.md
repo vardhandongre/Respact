@@ -1,5 +1,5 @@
 # ReSpAct: Harmonizing Reasoning, Speaking, and Acting
-[![Paper](https://img.shields.io/badge/arXiv-Paper-red.svg)]()
+[![Paper](https://img.shields.io/badge/arXiv-Paper-red.svg)](https://arxiv.org/abs/2411.00927)
 
 **[ReSpAct: Harmonizing Reasoning, Speaking, and Acting Towards Building Large Language Model-Based Conversational AI Agents](https://vardhandongre.github.io/respact-llm/)**  
 [Vardhan Dongre](https://vardhandongre.github.io/), [Xiaocheng Yang](https://www.linkedin.com/in/xiaocheng-yang-1a68aa20b?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAADVY_o4B3amA3qxReMk8okt2Vk9XjaRcS0g&lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3B%2FelJ2zYqRVuwEdBXgxKDEw%3D%3D), [Emre Can Acikgoz](https://emrecanacikgoz.github.io/), [Suvodip Dey](https://scholar.google.com/citations?user=cCFhUMwAAAAJ&hl=en), [Gokhan Tur](https://siebelschool.illinois.edu/about/people/faculty/gokhan), [Dilek Hakkani-Tür](https://siebelschool.illinois.edu/about/people/faculty/dilek)
@@ -8,17 +8,17 @@
   <img src="assets/diagram.gif">
 </p>
 
-This repository contains code for reproducing results. If you find this work useful in your research, please cite:
+This repository contains code for ReSpAct. If you find this work useful in your research, please cite:
 
 ```
-@inproceedings{,
-  bibtex_show = {true},
-  title = {ReSpAct: Harmonizing Reasoning, Speaking, and Acting Towards Building Large Language Model-Based Conversational AI Agents},
-  author = {},
-  booktitle = {ArXiv},
-  year = {preprint},
-  html = {},
-  tag = {NLP}
+@misc{dongre2024respactharmonizingreasoningspeaking,
+      title={ReSpAct: Harmonizing Reasoning, Speaking, and Acting Towards Building Large Language Model-Based Conversational AI Agents}, 
+      author={Vardhan Dongre and Xiaocheng Yang and Emre Can Acikgoz and Suvodip Dey and Gokhan Tur and Dilek Hakkani-Tür},
+      year={2024},
+      eprint={2411.00927},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2411.00927}, 
 }
 ```
 
@@ -30,9 +30,10 @@ Create a virtual environment (recommended)
     conda activate respact
     pip install -r requirements.txt
 
-## :hammer_and_pick: Environment Setup
-## Alfworld
 
+# 🤖 Alfworld
+
+### :hammer_and_pick: Environment Setup
 > [!WARNING]  
 > If you are using MacOS with an arm-based system, it is recommended to use
 > 
@@ -48,7 +49,7 @@ Download PDDL & Game files and pre-trained MaskRCNN detector:
 export ALFWORLD_DATA=<storage_path>
 alfworld-download
 ```
-## Run ReSpAct Experiments
+### Run ReSpAct Experiments
 ```bash
 export OPENAI_API_KEY=<key>
 ```
@@ -61,9 +62,11 @@ The experiments are controlled via two yaml files, `base_config.yaml` to control
 
     python main.py
     
-## 🛒 WebShop
-## 🚀 Setup
-Our code is implemented in Python. To setup, do the following:
+# 🛒 WebShop
+![](https://github.com/vardhandongre/Respact/blob/main/videos/respact-demo-webshop.gif)
+
+### :hammer_and_pick: Environment Setup
+To setup, do the following:
 1. Install [Python 3.8.13](https://www.python.org/downloads/release/python-3813/)
 2. Install [Java](https://www.java.com/en/download/)
 3. Download the source code:
@@ -95,7 +98,7 @@ DEFAULT_ATTR_PATH = join(BASE_DIR, '../data/items_ins_v2.json')
 DEFAULT_FILE_PATH = join(BASE_DIR, '../data/items_shuffle.json')
 ```
 
-## 🛠️ Usage
+### 🛠️ Usage
 The WebShop environment can be rendered in two modes - `html` and `simple` - each of which offer a different observation space. The `simple` mode strips away the extraneous meta-data that the `html` mode includes to make model training and evaluation easier.
 ### Webpage Environment (`html` mode)
 Launch the `WebShop` webpage:
@@ -104,7 +107,7 @@ Launch the `WebShop` webpage:
 ```
 The site should then be viewable in the browser. Go to http://localhost:3000/ABC, where you should land on the search home page with a random instruction.
 
-## Run ReSpAct Experiments
+### Run ReSpAct Experiments
 ```bash
 export OPENAI_API_KEY=<key>
 ```
@@ -114,7 +117,8 @@ export AZURE_OPENAI_ENDPOINT=<endpoint>
 export AZURE_OPENAI_KEY=<key>
 ```
 
-To-Do
+# 🧙‍♂️ MultiWOZ
+![](https://github.com/vardhandongre/Respact/blob/main/videos/respact-demo-woz-2-ezgif.com-video-to-gif-converter.gif)
 
 
 ## MultiWOZ
