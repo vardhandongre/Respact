@@ -3,7 +3,7 @@ import sys
 
 from config import Config
 from data_loader import DataLoader
-from methods import get_method
+from methods import get_old_method
 from environment import create_environment 
 
 class ExperimentRunner:
@@ -22,11 +22,12 @@ class ExperimentRunner:
             if exp_name in self.exp_config['experiments']:
                 print(f"Running experiment: {exp_name}")
                 experiment_config = self.exp_config['experiments'][exp_name]
+
                 
                 # Check if exp_name folder exists in results, if not create it
                 method = experiment_config['method']
-                if not os.path.exists(f"results/{method}/{exp_name}"):
-                    os.makedirs(f"results/{method}/{exp_name}")
+                if not os.path.exists(f"results/{method}/{exp_name}/{experiment_config['agent']}"):
+                    os.makedirs(f"results/{method}/{exp_name}/{experiment_config['agent']}")
                 
                 rs, cnts = self.run_experiment(exp_name, use_azure, experiment_config)
                 results[exp_name] = {'rs': rs, 'cnts': cnts}

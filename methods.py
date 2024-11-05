@@ -5,7 +5,7 @@ import openai
 from openai import OpenAI
 from utils import get_openai_client, calculate_success_rate, visualize_results, update_results, load_txt, load_json, cprint
 from process_observations import process_ob
-from llm_agent import gpt4_agent, llama3_agent, mistral_agent, gpt4_structured_agent
+from llm_agent import gpt4_agent, llama3_agent, mistral_agent, gpt4_structured_agent, mistralv3_7b_agent_together, llama31_8b_agent_together, llama31_70b_agent_together_user, llama31_405b_agent_together, mixtral_agent_together
 from oracle import oracle_support
 
 import numpy as np
@@ -73,7 +73,8 @@ class BaseMethod:
                                    self.method_prompts[f'{self.method_prefix}_{v}_2'] + 
                                    '\nHere is the task.\n')
                     print(k, v)
-                    r = self.alfworld_run(exp_name, use_azure, name, oracle_info, full_prompt, ob=ob)
+                    r = self.alfworld_run(exp_name, use_azure, name, full_prompt, ob=ob, to_print=True)
+                    # r = self.alfworld_run(exp_name, use_azure, name, oracle_info, full_prompt, to_print=True, ob=ob) # exp_name, use_azure, name, oracle_info, prompt, to_print=True, ob=''
                     rs, cnts = update_results(rs, cnts, i, r)
                     break
 
@@ -113,7 +114,7 @@ class BaseMethod:
         plt.grid(True)
         # plt.show()
         # Save the plot
-        plt.savefig(f'results/{self.method_name}/{exp_name}_{name}_periodic_success_rate_plot.png')
+        plt.savefig(f'results/{self.method_name}/{self.agent}_{exp_name}_{name}_periodic_success_rate_plot.png')
 
     def visualize_cumulative_rewards(self, exp_name, name, cumulative_rewards, final=False):
         name = name.replace('/', '_')
@@ -124,7 +125,7 @@ class BaseMethod:
         plt.ylabel('Cumulative Reward')
         plt.grid(True)
         # plt.show()
-        plt.savefig(f'results/{self.method_name}/{exp_name}_{name}_cum_success_rate_plot.png')
+        plt.savefig(f'results/{self.method_name}/{self.agent}_{exp_name}_{name}_cum_success_rate_plot.png')
 
 
 
@@ -173,7 +174,7 @@ class React(BaseMethod):
             prompt += f' {action}\n{observation}\n>'
 
             if done:
-                dir_path = f'results/{self.__class__.__name__}/{exp_name}'
+                dir_path = f'results/{self.__class__.__name__}/{exp_name}/{self.agent}'
                 os.makedirs(dir_path, exist_ok=True)
                 sanitized_name = ''.join(c for c in name if c.isalnum() or c in ('-', '_'))
                 file_path = f'{dir_path}/{sanitized_name}_action_observation_pairs.txt'
@@ -185,7 +186,7 @@ class React(BaseMethod):
                 except IOError as e:
                     print(f"An error occurred while writing to file: {e}")
                 return reward
-        dir_path = f'results/{self.__class__.__name__}/{exp_name}'
+        dir_path = f'results/{self.__class__.__name__}/{exp_name}/{self.agent}'
         os.makedirs(dir_path, exist_ok=True)
         sanitized_name = ''.join(c for c in name if c.isalnum() or c in ('-', '_'))
         file_path = f'{dir_path}/{sanitized_name}_action_observation_pairs_failed.txt'
@@ -271,7 +272,7 @@ class ReSpAct(BaseMethod):
         return 0
 
     def _save_action_observation_pairs(self, exp_name, name, action_observation_pairs, failed=False):
-        dir_path = f'results/{self.__class__.__name__}/{exp_name}'
+        dir_path = f'results/{self.__class__.__name__}/{exp_name}/{self.agent}'
         os.makedirs(dir_path, exist_ok=True)
         sanitized_name = ''.join(c for c in name if c.isalnum() or c in ('-', '_'))
         status = '_failed' if failed else ''

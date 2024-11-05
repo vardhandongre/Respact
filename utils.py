@@ -80,14 +80,18 @@ def create_combined_prompt_json(data_path, output_path):
 def load_combined_prompt_json(file):
     return load_json(file)
 
+# emrecan
+# export OPENAI_API_KEY="sk-hzgbLMGMBwMSggpzVXh5dVw9XWs82wAL4XrvdhvbNWT3BlbkFJoRn63AvdnQBtk7w1hJRqZ9Ldf7xPRcqtn-x3MWSv8A"
+# conv-ai
+# export AZURE_OPENAI_KEY="2907ee0316c7484784e43e81092087eb"
 
 # Openai tools
 def get_openai_client(use_azure=False):
     if use_azure:
         client = AzureOpenAI(
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+            azure_endpoint="https://uiuc-convai.openai.azure.com/",
             api_key=os.getenv("AZURE_OPENAI_KEY"),
-            api_version="2023-03-15-preview"
+            api_version="2024-02-15-preview"
         )
     else:
         client = OpenAI(

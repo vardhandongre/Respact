@@ -10,6 +10,7 @@ import ollama
 from pydantic import BaseModel
 from openai import OpenAI
 from typing import Literal
+from together import Together
 
 # def llm(prompt, stop=["\n"], use_azure=True):
 #     client = get_openai_client(use_azure)
@@ -90,7 +91,7 @@ def gpt4_agent(prompt, stop=["\n"], use_azure=True):
     
     try:
         response = client.chat.completions.create(
-            model=model,
+            model="gpt4o-mini",
             messages=message,
             temperature=0,
             max_tokens=100,
@@ -225,4 +226,104 @@ def llama31_agent(prompt, stop=['\n'], model='llama3.1'):
         print(f"An error occurred while calling the Ollama API: {str(e)}")
         return ""
     
+def mistralv3_7b_agent_together(prompt, stop=['\n'], model='mistral', use_azure=False):
+    try:
+        client = Together(api_key=os.environ.get("TOGETHER_API_KEY"))
 
+        response = client.chat.completions.create(
+            model="mistralai/Mistral-7B-Instruct-v0.3",
+            messages=[{"role": "user", "content": prompt}],
+        )
+
+        content = response.choices[0].message.content
+        # Post-process to ensure we stop at the first occurrence of any stop sequence
+        for stop_seq in stop:
+            index = content.find(stop_seq)
+            if index != -1:
+                content = content[:index]
+        
+        return content.strip()
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return ""
+
+def llama31_8b_agent_together(prompt, stop=['\n'], model='llama', use_azure=False):
+    try:
+        client = Together(api_key=os.environ.get("TOGETHER_API_KEY"))
+
+        response = client.chat.completions.create(
+            model="meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo", # meta-llama/Llama-3.1-8B-Instruct
+            messages=[{"role": "system", "content": prompt}],
+        )
+        content = response.choices[0].message.content
+        # Post-process to ensure we stop at the first occurrence of any stop sequence
+        for stop_seq in stop:
+            index = content.find(stop_seq)
+            if index != -1:
+                content = content[:index]
+        
+        return content.strip()
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return ""
+
+def llama31_70b_agent_together_user(prompt, stop=['\n'], model='llama', use_azure=False):
+    try:
+        client = Together(api_key=os.environ.get("TOGETHER_API_KEY"))
+
+        response = client.chat.completions.create(
+            model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", # meta-llama/Llama-3.1-8B-Instruct
+            messages=[{"role": "user", "content": prompt}],
+        )
+        content = response.choices[0].message.content
+        # Post-process to ensure we stop at the first occurrence of any stop sequence
+        for stop_seq in stop:
+            index = content.find(stop_seq)
+            if index != -1:
+                content = content[:index]
+        
+        return content.strip()
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return ""
+
+
+def mixtral_agent_together(prompt, stop=['\n'], model='llama', use_azure=False):
+    try:
+        client = Together(api_key=os.environ.get("TOGETHER_API_KEY"))
+
+        response = client.chat.completions.create(
+            model="mistralai/Mixtral-8x22B-Instruct-v0.1", # meta-llama/Llama-3.1-8B-Instruct
+            messages=[{"role": "system", "content": prompt}],
+        )
+        content = response.choices[0].message.content
+        # Post-process to ensure we stop at the first occurrence of any stop sequence
+        for stop_seq in stop:
+            index = content.find(stop_seq)
+            if index != -1:
+                content = content[:index]
+        
+        return content.strip()
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return ""
+
+def llama31_405b_agent_together(prompt, stop=['\n'], model='llama', use_azure=False):
+    try:
+        client = Together(api_key=os.environ.get("TOGETHER_API_KEY"))
+
+        response = client.chat.completions.create(
+            model="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo", # meta-llama/Llama-3.1-8B-Instruct
+            messages=[{"role": "system", "content": prompt}],
+        )
+        content = response.choices[0].message.content
+        # Post-process to ensure we stop at the first occurrence of any stop sequence
+        for stop_seq in stop:
+            index = content.find(stop_seq)
+            if index != -1:
+                content = content[:index]
+        
+        return content.strip()
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return ""
