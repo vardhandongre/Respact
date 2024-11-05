@@ -118,4 +118,65 @@ To-Do
 
 
 ## MultiWOZ
-To-Do
+### 🚀 Setup
+Our code is implemented in Python. To setup, do the following:
+1. Go to the multiwoz folder:
+```sh
+> cd ./multiwoz
+```
+2. Create a virtual environment using [Anaconda](https://anaconda.org/anaconda/python) and activate it:
+```sh
+> conda create -n multiwoz python=3.10
+> conda activate multiwoz
+```
+3. Install requirements into the `multiwoz` virtual environment:
+```sh
+> pip install -r requirements.txt --no-dependencies
+```
+4. Download the source code:
+```sh
+> git clone "https://github.com/smartyfh/MultiWOZ2.4.git"
+```
+5. Preprocess the dataset:
+```sh
+> cd "./MultiWOZ2.4"
+> python create_data.py
+> cd ".."
+```
+### 🛠️ Usage
+#### Offline Evaluation
+For offline (traditional) evaluation, please follow the following instructions:
+1. Open the `offline_evaluate.ipynb` file.
+2. In the `Data Process` section, change the `sample` variable. If it is an integer, then that many of dialogues will be sampled from the test set. If it is None, then the whole test set will be used.
+3. In the `Client Config` section, change the client configuration to use your own one.
+4. In the `Evaluation` section, change the `save_dir` to the folder you prefer.
+5. (Optional) Feel free to use your own prompt and pass it to `prompt` in the `evaluator` object.
+6. (Igore the first two blocks if you have downloaded and preprocessed the dataset.) Run the `offline_evaluate.ipynb` file.
+7. (Optional) Clean the generated output:
+```sh
+> python clean.py --file_name <generated_file_name> --new_file_name <cleaned_file_name>
+```
+8. Format the generated output:
+```sh
+> python eval_postprocess.py --file_name <file_name> --new_file_name <formatted_file_name>
+```
+9. Use [MultiWOZ Helper](https://github.com/uiuc-conversational-ai-lab/multiwoz-helper) to obtain the scores.
+#### Online Evaluation
+For offline (traditional) evaluation, please follow the following instructions:
+1. Open the `online_evaluate.ipynb` file.
+2. In the `Data Process` section, change the `sample` variable. If it is an integer, then that many of dialogues will be sampled from the test set. If it is None, then the whole test set will be used.
+3. In the `Client Config` section, change the `client_config` for the assistant and the `user_client_config` for the user simulator to use your own ones.
+4. In the `Evaluation` section, change the `save_dir` to the folder you prefer.
+5. (Optional) Feel free to use your own prompt and pass it to `prompt` in the `evaluator` object.
+6. (Igore the first two blocks if you have downloaded and preprocessed the dataset.) Run the `online_evaluate.ipynb` file.
+7. (Optional) Clean the generated output:
+```sh
+> python clean.py --file_name <generated_file_name> --new_file_name <cleaned_file_name>
+```
+8. Format the generated output:
+```sh
+> python eval_postprocess_autotod.py --file_name <file_name> --new_file_name <formatted_file_name>
+```
+9. Use [AutoTOD](https://github.com/DaDaMrX/AutoTOD) to obtain the scores.
+#### Interactive Mode
+`ReAct.ipynb` provides an example for interactive mode. It supports both plain text interaction and gradio interaction.

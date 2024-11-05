@@ -1,7 +1,13 @@
+import argparse
 import json
 
-file_name = "eval_result_online-40.json"
-new_file_name = "eval_result_online-40-1.json"
+parser = argparse.ArgumentParser()
+parser.add_argument("--file_name", type=str, default="eval_result-46-1.json")
+parser.add_argument("--new_file_name", type=str, default="eval_result-46-ready.json")
+args = parser.parse_args()
+
+file_name = parser.file_name
+new_file_name = args.new_file_name
 
 with open(file_name, "r") as f:
     result = json.load(f)
