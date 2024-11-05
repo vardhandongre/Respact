@@ -120,8 +120,6 @@ export AZURE_OPENAI_KEY=<key>
 # 🧙‍♂️ MultiWOZ
 ![](https://github.com/vardhandongre/Respact/blob/main/videos/respact-demo-woz-2-ezgif.com-video-to-gif-converter.gif)
 
-
-## MultiWOZ
 ### 🚀 Setup
 Our code is implemented in Python. To setup, do the following:
 1. Go to the multiwoz folder:
