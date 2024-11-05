@@ -11,14 +11,14 @@
 This repository contains code for reproducing results. If you find this work useful in your research, please cite:
 
 ```
-@inproceedings{,
-  bibtex_show = {true},
-  title = {ReSpAct: Harmonizing Reasoning, Speaking, and Acting Towards Building Large Language Model-Based Conversational AI Agents},
-  author = {},
-  booktitle = {ArXiv},
-  year = {preprint},
-  html = {},
-  tag = {NLP}
+@misc{dongre2024respactharmonizingreasoningspeaking,
+      title={ReSpAct: Harmonizing Reasoning, Speaking, and Acting Towards Building Large Language Model-Based Conversational AI Agents}, 
+      author={Vardhan Dongre and Xiaocheng Yang and Emre Can Acikgoz and Suvodip Dey and Gokhan Tur and Dilek Hakkani-Tür},
+      year={2024},
+      eprint={2411.00927},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2411.00927}, 
 }
 ```
 
