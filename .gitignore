@@ -1,0 +1,13 @@
+# Obviously
+*.env
+
+# Python Stuff
+__pycache__
+
+# Alfworld stuff
+data/
+
+# Other Stuff
+.DS_Store
+.idea
+.venv
