@@ -25,13 +25,13 @@ env:
 
   thor:
     screen_width: 800                                          # width of THOR window
-    screen_height: 1100                                         # height of THOR window
-    smooth_nav: True                                          # smooth rotations, looks, and translations during navigation (very slow)
+    screen_height: 500                                         # height of THOR window
+    smooth_nav: False                                          # smooth rotations, looks, and translations during navigation (very slow)
     save_frames_to_disk: False                                 # save frame PNGs to disk (useful for making videos)
     save_frames_path: './videos/'                              # path to save frame PNGs
 
 controller:
-  type: 'oracle'                                               # 'oracle' or 'oracle_astar' or 'mrcnn' or 'mrcnn_astar' (aka BUTLER)
+  type: 'oracle_astar'                                               # 'oracle' or 'oracle_astar' or 'mrcnn' or 'mrcnn_astar' (aka BUTLER)
   debug: False
   load_receps: True                                            # load receptacle locations from precomputed dict (if available)
 

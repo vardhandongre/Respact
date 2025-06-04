@@ -24,9 +24,9 @@ env:
     eval_mode: "tw"                                            # 'tw' or 'thor' - env used for evaluation during hybrid training
 
   thor:
-    screen_width: 500                                          # width of THOR window
-    screen_height: 300                                         # height of THOR window
-    smooth_nav: True                                          # smooth rotations, looks, and translations during navigation (very slow)
+    screen_width: 800                                          # width of THOR window
+    screen_height: 500                                         # height of THOR window
+    smooth_nav: False                                          # smooth rotations, looks, and translations during navigation (very slow)
     save_frames_to_disk: False                                 # save frame PNGs to disk (useful for making videos)
     save_frames_path: './videos/'                              # path to save frame PNGs
 
@@ -36,7 +36,7 @@ controller:
   load_receps: True                                            # load receptacle locations from precomputed dict (if available)
 
 mask_rcnn:
-  pretrained_model_path: '$ALFWORLD_DATA/detectors/mrcnn.pth'
+  pretrained_model_path: '$ALFWORLD_DATA/detectors/mrcnn_alfred_objects_sep13_004.pth'
 
 general:
   random_seed: 42

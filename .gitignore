@@ -5,6 +5,8 @@
 __pycache__
 
 # Alfworld stuff
+downward/
+src
 data/
 
 # Other Stuff
