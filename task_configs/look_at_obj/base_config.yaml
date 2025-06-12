@@ -24,8 +24,8 @@ env:
     eval_mode: "tw"                                            # 'tw' or 'thor' - env used for evaluation during hybrid training
 
   thor:
-    screen_width: 800                                          # width of THOR window
-    screen_height: 500                                         # height of THOR window
+    screen_width: 1200                                          # width of THOR window
+    screen_height: 750                                         # height of THOR window
     smooth_nav: False                                          # smooth rotations, looks, and translations during navigation (very slow)
     save_frames_to_disk: False                                 # save frame PNGs to disk (useful for making videos)
     save_frames_path: './videos/'                              # path to save frame PNGs
@@ -40,7 +40,7 @@ mask_rcnn:
 
 general:
   random_seed: 42
-  use_cuda: True                                               # disable this when running on machine without cuda
+  use_cuda: False                                               # disable this when running on machine without cuda
   visdom: False                                                # plot training/eval curves, run with visdom server
   task: 'alfred'
   training_method: 'dagger'                                    # 'dqn' or 'dagger'

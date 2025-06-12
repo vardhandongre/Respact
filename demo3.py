@@ -14,9 +14,19 @@ import time
 # Import all necessary modules from your original code
 import alfworld
 import alfworld.agents.environment
+
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer
+from sumy.nlp.stemmers import Stemmer
+from sumy.utils import get_stop_words
+import dotenv
+
 from oracle import oracle_support
 from user_sim import LLMUserAgent
 from openai import OpenAI, AzureOpenAI
+
+dotenv.load_dotenv("demo.env")
 
 # Custom stdout to capture print statements
 class StdoutRedirector(StringIO):
@@ -51,7 +61,14 @@ def load_txt(file):
 def generate_human_task_description(task_desc):
     """Generate a more natural human description of the task using LLM"""
     prompt = [
-        {"role": "system", "content": f"You are a helpful assistant that converts formal task descriptions into natural human instructions. Keep your response concise and conversational. Convert this formal task description into a natural instruction as if a human is explaining the task to an AI assistant: '{task_desc}'. Start with 'Your task is to' and make it sound conversational but brief, If there is an object mentioned ask the AI to first find the object in the environment. Don't use bullet points or numbered lists, just a simple statement. For example, 'Your task is to look at pencil under the desklamp.' This can be converted to 'Your task is to look at pencil under the desklamp. First, Find the pencil, then locate the desklamp and then examine it under the lamp.'"}
+        {"role": "system", "content": f"You are a helpful assistant that converts formal task descriptions into natural human instructions."
+                                      f"Keep your response concise and conversational. Convert this formal task description into a natural "
+                                      f"instruction as if a human is explaining the task to an AI assistant: '{task_desc}'. Start with 'Your"
+                                      f" task is to' and make it sound conversational but brief, If there is an object mentioned ask the AI "
+                                      f"to first find the object in the environment. Don't use bullet points or numbered lists, just a simple"
+                                      f" statement. For example, 'Your task is to look at pencil under the desklamp.' This can be converted "
+                                      f"to 'Your task is to look at pencil under the desklamp. First, Find the pencil, then locate the "
+                                      f"desklamp and then examine it under the lamp.'"}
     ]
 
     try:
@@ -130,11 +147,13 @@ def get_task_folders(configs_root_dir="task_configs"):
     return valid_task_folders
 
 # Main GUI Application
+# noinspection t
 class AlfworldGUI(tk.Frame):
-    def __init__(self, parent, capture_thor=False, tag_include: list[str] = None, tag_exclude: list[str] = None, **kwargs):
+    def __init__(self, parent, capture_thor=False, tag_include: list[str] = None, tag_exclude: list[str] = None, top_view=False, **kwargs):
         super().__init__(parent, **kwargs)
         self.root = parent
         self.capture_thor = capture_thor
+        self.top_view = top_view
         self.tag_include = tag_include
         self.tag_exclude = tag_exclude
 
@@ -145,6 +164,12 @@ class AlfworldGUI(tk.Frame):
         self.react_message_queue = queue.Queue()
         self.react_human_input_queue = queue.Queue()
         self.react_waiting_for_human_input = False
+
+        # Text Summarization
+        self.tokenizer = Tokenizer("english")
+        self.summarizer = LsaSummarizer(Stemmer("english"))
+        self.summarizer.stop_words = get_stop_words("english")
+
 
         # Config settings
         self.configs_root_dir = "task_configs"  # Default directory for task configs
@@ -174,13 +199,13 @@ class AlfworldGUI(tk.Frame):
 
     def setup_styles(self):
         # Font sizes - adjust these values to change font size throughout the app
-        self.title_font_size = 14
-        self.main_font_size = 11
-        self.system_font_size = 10
-        self.reward_font_size = 13
-        self.react_main_font_size = 11
-        self.react_system_font_size = 10
-        self.react_reward_font_size = 13
+        self.title_font_size = 16
+        self.main_font_size = 14
+        self.system_font_size = 12
+        self.reward_font_size = 15
+        self.react_main_font_size = 14
+        self.react_system_font_size = 12
+        self.react_reward_font_size = 15
 
         # Configure styles for different message types in the main frame
         self.respact_frame.tag_configure("think", foreground="#6a0dad", font=("Helvetica", self.main_font_size, "italic"))
@@ -218,21 +243,21 @@ class AlfworldGUI(tk.Frame):
         self.paned_window.add(self.left_frame, weight=4)
 
         # Title for main interaction area
-        self.respact_title = ttk.Label(self.left_frame, text=f"ReSpAct Agent Interaction", font=("Helvetica", 14, "bold"))
+        self.respact_title = ttk.Label(self.left_frame, text=f"ReSpAct Agent (friction)", font=("Helvetica", 14, "bold"))
         self.respact_title.pack(pady=(0, 10), anchor="w")
 
         # Font size control for main frame
-        self.font_frame = ttk.Frame(self.left_frame)
-        self.font_frame.pack(fill=tk.X, pady=(0, 10))
-
-        self.font_label = ttk.Label(self.font_frame, text="Text Size:", font=("Helvetica", 10))
-        self.font_label.pack(side=tk.LEFT, padx=(0, 5))
-
-        self.decrease_font = ttk.Button(self.font_frame, text="-", width=3, command=self.decrease_font_size)
-        self.decrease_font.pack(side=tk.LEFT, padx=(0, 2))
-
-        self.increase_font = ttk.Button(self.font_frame, text="+", width=3, command=self.increase_font_size)
-        self.increase_font.pack(side=tk.LEFT)
+        # self.font_frame = ttk.Frame(self.left_frame)
+        # self.font_frame.pack(fill=tk.X, pady=(0, 10))
+        #
+        # self.font_label = ttk.Label(self.font_frame, text="Text Size:", font=("Helvetica", 10))
+        # self.font_label.pack(side=tk.LEFT, padx=(0, 5))
+        #
+        # self.decrease_font = ttk.Button(self.font_frame, text="-", width=3, command=self.decrease_font_size)
+        # self.decrease_font.pack(side=tk.LEFT, padx=(0, 2))
+        #
+        # self.increase_font = ttk.Button(self.font_frame, text="+", width=3, command=self.increase_font_size)
+        # self.increase_font.pack(side=tk.LEFT)
 
         # Main interaction display with scrollbar
         self.respact_frame = scrolledtext.ScrolledText(self.left_frame, wrap=tk.WORD, height=10,
@@ -261,18 +286,18 @@ class AlfworldGUI(tk.Frame):
         self.center_frame = ttk.Frame(self.paned_window, padding=5)
         self.paned_window.add(self.center_frame, weight=4)
 
-        self.react_title = ttk.Label(self.center_frame, text="ReAct Agent Interaction", font=("Helvetica", 14, "bold"))
+        self.react_title = ttk.Label(self.center_frame, text="ReAct Agent (no friction)", font=("Helvetica", 14, "bold"))
         self.react_title.pack(pady=(0, 10), anchor="w")
 
-        self.react_font_frame = ttk.Frame(self.center_frame)
-        self.react_font_frame.pack(fill=tk.X, pady=(0, 10))
-        self.react_font_label = ttk.Label(self.react_font_frame, text="Text Size:", font=("Helvetica", 10))
-        self.react_font_label.pack(side=tk.LEFT, padx=(0, 5))
-
-        self.decrease_react_font = ttk.Button(self.react_font_frame, text="-", width=3, command=self.decrease_react_font_size)
-        self.decrease_react_font.pack(side=tk.LEFT, padx=(0, 2))
-        self.increase_react_font = ttk.Button(self.react_font_frame, text="+", width=3, command=self.increase_react_font_size)
-        self.increase_react_font.pack(side=tk.LEFT)
+        # self.react_font_frame = ttk.Frame(self.center_frame)
+        # self.react_font_frame.pack(fill=tk.X, pady=(0, 10))
+        # self.react_font_label = ttk.Label(self.react_font_frame, text="Text Size:", font=("Helvetica", 10))
+        # self.react_font_label.pack(side=tk.LEFT, padx=(0, 5))
+        #
+        # self.decrease_react_font = ttk.Button(self.react_font_frame, text="-", width=3, command=self.decrease_react_font_size)
+        # self.decrease_react_font.pack(side=tk.LEFT, padx=(0, 2))
+        # self.increase_react_font = ttk.Button(self.react_font_frame, text="+", width=3, command=self.increase_react_font_size)
+        # self.increase_react_font.pack(side=tk.LEFT)
 
         # ReAct agent interaction display with scrollbar
         self.react_frame = scrolledtext.ScrolledText(self.center_frame, wrap=tk.WORD, height=10,
@@ -305,22 +330,31 @@ class AlfworldGUI(tk.Frame):
         self.info_title.pack(pady=(0, 10), anchor="w")
 
         # Font size control for info frame
-        self.info_font_frame = ttk.Frame(self.right_frame)
-        self.info_font_frame.pack(fill='x', pady=(0, 10))
+        # self.info_font_frame = ttk.Frame(self.right_frame)
+        # self.info_font_frame.pack(fill='x', pady=(0, 10))
+        #
+        # self.info_font_label = ttk.Label(self.info_font_frame, text="Info Size:", font=("Helvetica", 10))
+        # self.info_font_label.pack(side='left', padx=(0, 5))
 
-        self.info_font_label = ttk.Label(self.info_font_frame, text="Info Size:", font=("Helvetica", 10))
-        self.info_font_label.pack(side='left', padx=(0, 5))
-
-        self.decrease_info_font = ttk.Button(self.info_font_frame, text="-", width=3, command=self.decrease_info_font_size)
-        self.decrease_info_font.pack(side='left', padx=(0, 2))
-
-        self.increase_info_font = ttk.Button(self.info_font_frame, text="+", width=3, command=self.increase_info_font_size)
-        self.increase_info_font.pack(side='left')
+        # self.decrease_info_font = ttk.Button(self.info_font_frame, text="-", width=3, command=self.decrease_info_font_size)
+        # self.decrease_info_font.pack(side='left', padx=(0, 2))
+        #
+        # self.increase_info_font = ttk.Button(self.info_font_frame, text="+", width=3, command=self.increase_info_font_size)
+        # self.increase_info_font.pack(side='left')
 
         self.info_frame = scrolledtext.ScrolledText(self.right_frame, wrap=tk.WORD, height=15,
                                                    font=("Helvetica", 11), bg="#ffffff")
         self.info_frame.pack(fill='both', expand=True)
         self.info_frame.configure(state="disabled")
+
+        # Font controls for all frames
+        for sequence, callback in [
+            ("<Command-plus>", lambda e: (self.increase_font_size(), self.increase_react_font_size(), self.increase_info_font_size())),
+            ("<Command-minus>", lambda e: (self.decrease_font_size(), self.decrease_react_font_size(), self.decrease_info_font_size())),
+            ("<Control-plus>", lambda e: (self.increase_font_size(), self.increase_react_font_size(), self.increase_info_font_size())),
+            ("<Control-minus>", lambda e: (self.decrease_font_size(), self.decrease_react_font_size(), self.decrease_info_font_size())),
+        ]:
+            self.root.bind_all(sequence, callback)
 
         # Controls section
         self.controls_title = ttk.Label(self.right_frame, text="Controls", font=("Helvetica", 14, "bold"))
@@ -554,8 +588,15 @@ class AlfworldGUI(tk.Frame):
                 return
             case 'think':
                 # Format think messages with a lightbulb emoji
-                frame.insert(tk.END, f"💭 [Think] {message}\n", "think")
-                frame.see(tk.END)
+                # frame.insert(tk.END, f"💭 [Think] {message}\n", "think")
+                # frame.see(tk.END)
+                # Summarize message into one sentence
+                parser = PlaintextParser.from_string(message, self.tokenizer)
+                summary = self.summarizer(parser.document, 1)  # Summarize to 1 sentence
+                if len(summary) > 0:
+                    message = summary[0]
+                    frame.insert(tk.END, f"💭 [Think] {message}\n", "think")
+                    frame.see(tk.END)
             case 'act':
                 # Format action messages with a gear emoji
                 frame.insert(tk.END, f"⚙️ [Action] {message}\n", "act")
@@ -574,6 +615,12 @@ class AlfworldGUI(tk.Frame):
                 # Format observation messages with an eye emoji
                 frame.insert(tk.END, f"👁️ [Observation] {message}\n", "observation")
                 frame.see(tk.END)
+                # parser = PlaintextParser.from_string(message, self.tokenizer)
+                # summary = self.summarizer(parser.document, 1)  # Summarize to 1 sentence
+                # if len(summary) > 0:
+                #     message = summary[0]
+                #     frame.insert(tk.END, f"👁️ [Observation2] {message}\n", "observation")
+                #     frame.see(tk.END)
             case 'system':
                 # Format system messages with an info emoji but make them less prominent
                 frame.insert(tk.END, f"ℹ️ {message}\n", "system")
@@ -632,7 +679,7 @@ class AlfworldGUI(tk.Frame):
             # Setup environments
             split = "eval_out_of_distribution"
 
-            if respact: # only log info once
+            if not respact: # only log info once
                 self.info_frame.configure(state="normal")
                 # Clear the info frame first
                 self.info_frame.delete(1.0, tk.END)
@@ -682,6 +729,27 @@ class AlfworldGUI(tk.Frame):
             ob1, info1 = env1.reset()
             ob2, info2 = env2.reset()
 
+            if self.top_view:
+                controller = env1.envs[0].controller
+                robot_id = controller.env.last_event.metadata["agent"]["objectId"]
+                message_queue.put(('system',"Adding third party camera"))
+                evt = controller.step(dict(
+                    action="AddThirdPartyCamera",
+                    attachToObject=robot_id,
+                    rotation=dict(x=90, y=0, z=0),
+                    position=dict(x=0, y=2, z=0),
+                    fieldOfView=1.0,
+                    orthographic=True,
+                ))
+                message_queue.put(('system', "Added third party camera"))
+                #
+                message_queue.put(('system',"Setting top level view"))
+                evt = controller.step(dict(action="SetTopLevelView", topView=True))
+
+                # message_queue.put(('system',"Toggling map view"))
+                # evt = env1.envs[0].controller.env.step(dict(action="ToggleMapView"))
+                # message_queue.put(('system',"Map view enabled"))
+
             ob1 = '\n'.join(ob1[0].split('\n\n')[1:])
             name1 = '/'.join(info1['extra.gamefile'][0].split('/')[-3:-1])
             ob2 = '\n'.join(ob2[0].split('\n\n')[1:])
@@ -720,7 +788,7 @@ class AlfworldGUI(tk.Frame):
 
                     objects_list = [obj.strip() for obj in objects if obj.strip()]
 
-            if respact: # only log info once
+            if not respact: # only log info once
                 self.info_frame.configure(state="normal")
                 # Display information in the game info panel
                 self.info_frame.insert(tk.END, "Original Task Description:\n", "system")
@@ -760,11 +828,11 @@ class AlfworldGUI(tk.Frame):
                 message_queue.put(('system', f"Error: Could not determine prompt type for task: {selected_task}"))
                 message_queue.put(('status', "Error: Unknown task type"))
 
-        except Exception as e:
-            message_queue.put(('system', f"Error: {str(e)}\n"))
+        except KeyboardInterrupt as e:
+            message_queue.put(('system', f"Error: {repr(e)}\n"))
             message_queue.put(('status', "Error occurred"))
 
-    def alfworld_run(self, prompt, oracle_info, env1, env2, to_print=True, ob='', respact=True):
+    def alfworld_run(self, prompt, oracle_info, env1, env2, ob='', respact=True):
         if respact:
             message_queue = self.message_queue
             status_bar = self.status_bar
@@ -876,7 +944,6 @@ class AlfworldGUI(tk.Frame):
 
 # Main application
 if __name__ == "__main__":
-    nested = False
     filtered = False
 
     root = tk.Tk()
@@ -884,8 +951,8 @@ if __name__ == "__main__":
     root.configure(bg="#f5f5f5")
     root.title("ReSpAct AlfWorld Agent Comparison")
 
-    tag_include = ['act'] if filtered else None
+    tag_include = ['act', 'think'] if filtered else None
 
-    respact_app = AlfworldGUI(root, capture_thor=False, tag_include=tag_include)
+    respact_app = AlfworldGUI(root, capture_thor=True, tag_include=tag_include, top_view=True)
 
     root.mainloop()

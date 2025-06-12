@@ -31,7 +31,7 @@ env:
     save_frames_path: './videos/'                              # path to save frame PNGs
 
 controller:
-  type: 'oracle'                                               # 'oracle' or 'oracle_astar' or 'mrcnn' or 'mrcnn_astar' (aka BUTLER)
+  type: 'oracle_astar'                                               # 'oracle' or 'oracle_astar' or 'mrcnn' or 'mrcnn_astar' (aka BUTLER)
   debug: False
   load_receps: True                                            # load receptacle locations from precomputed dict (if available)
 
@@ -58,7 +58,7 @@ general:
 
   evaluate:
     run_eval: True
-    batch_size: 10
+    batch_size: 1
     env:
       type: "AlfredTWEnv"
 
