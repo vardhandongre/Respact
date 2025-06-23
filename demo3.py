@@ -14,7 +14,9 @@ import time
 # Import all necessary modules from your original code
 import alfworld
 import alfworld.agents.environment
+from alfworld.agents.controller.oracle_astar import OracleAStarAgent
 
+# Basic summarization
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
@@ -25,6 +27,10 @@ import dotenv
 from oracle import oracle_support
 from user_sim import LLMUserAgent
 from openai import OpenAI, AzureOpenAI
+
+# For type hinting and code correctness
+from ai2thor.controller import Controller
+from ai2thor.server import Event
 
 dotenv.load_dotenv("demo.env")
 
@@ -414,13 +420,18 @@ class AlfworldGUI(tk.Frame):
 
         # Redirect AI2Thor visual output
         if self.capture_thor:
-            self.view1 = tk.Canvas(self.left_frame, width=500, height=300, bg="black")
+            canvas_width = 500
+            canvas_height = 300
+            self.view1 = tk.Canvas(self.left_frame, width=canvas_width, height=canvas_height, bg="black")
             self.view1.pack(side='top', padx=5, pady=5)
-            self.view2 = tk.Canvas(self.center_frame, width=500, height=300, bg="black")
+            self.view2 = tk.Canvas(self.center_frame, width=canvas_width, height=canvas_height, bg="black")
             self.view2.pack(side='top', padx=5, pady=5)
 
-            self.img1 = None
-            self.img2 = None
+            self.img1 = ImageTk.PhotoImage(image=Image.new("RGB", (canvas_width, canvas_height), "blue"))
+            self.img2 = ImageTk.PhotoImage(image=Image.new("RGB", (canvas_width, canvas_height), "red"))
+
+            self.imgId1: int = self.view1.create_image(0, 0, image=self.img1, anchor=tk.NW)
+            self.imgId2: int = self.view2.create_image(0, 0, image=self.img2, anchor=tk.NW)
 
     def scan_config_dir(self):
         """Update the config directory and scan for task folders"""
@@ -697,6 +708,13 @@ class AlfworldGUI(tk.Frame):
             env1 = getattr(alfworld.agents.environment, config["env"]["type"])(config, train_eval=split)
             env1 = env1.init_env(batch_size=1)
 
+            # TODO: both third person and first person
+            if self.top_view:
+                env1b = getattr(alfworld.agents.environment, config["env"]["type"])(config, train_eval=split)
+                env1b = env1b.init_env(batch_size=1)
+            else:
+                env1b = None
+
             env2 = getattr(alfworld.agents.environment, config2["env"]["type"])(config2, train_eval=split)
             env2 = env2.init_env(batch_size=1)
 
@@ -727,28 +745,35 @@ class AlfworldGUI(tk.Frame):
 
             # Reset environments
             ob1, info1 = env1.reset()
+            if self.top_view:
+                _, _ = env1b.reset()
             ob2, info2 = env2.reset()
 
             if self.top_view:
-                controller = env1.envs[0].controller
-                robot_id = controller.env.last_event.metadata["agent"]["objectId"]
-                message_queue.put(('system',"Adding third party camera"))
-                evt = controller.step(dict(
-                    action="AddThirdPartyCamera",
-                    attachToObject=robot_id,
-                    rotation=dict(x=90, y=0, z=0),
-                    position=dict(x=0, y=2, z=0),
-                    fieldOfView=1.0,
-                    orthographic=True,
-                ))
-                message_queue.put(('system', "Added third party camera"))
-                #
-                message_queue.put(('system',"Setting top level view"))
-                evt = controller.step(dict(action="SetTopLevelView", topView=True))
+                controller: OracleAStarAgent = env1b.envs[0].controller
+                thor: Controller = controller.env
+                # robot_id = controller.env.last_event.metadata["agent"]["objectId"]
+                # message_queue.put(('system',"Adding third party camera"))
+                # evt = controller.step(dict(
+                #     action="AddThirdPartyCamera",
+                #     # attachToObject=robot_id,
+                #     rotation=dict(x=90, y=0, z=0),
+                #     position=dict(x=0, y=2, z=0),
+                #     # fieldOfView=90,
+                #     orthographic=True,
+                #     renderImage=True,
+                # ))
+                # message_queue.put(('system', str(evt)))
+                # message_queue.put(('system', str(controller.env.last_event.metadata['lastAction'])))
+                # self.room_cam_id = evt.metadata["thirdPartyCameras"][0]["cameraId"]
+                # message_queue.put(('system', "Added third party camera"))
 
-                # message_queue.put(('system',"Toggling map view"))
-                # evt = env1.envs[0].controller.env.step(dict(action="ToggleMapView"))
-                # message_queue.put(('system',"Map view enabled"))
+                # message_queue.put(('system',"Setting top level view"))
+                # evt = controller.step(dict(action="SetTopLevelView", topView=True))
+
+                message_queue.put(('system',"Toggling map view"))
+                evt = thor.step(dict(action="ToggleMapView"))
+                message_queue.put(('system',"Map view enabled"))
 
             ob1 = '\n'.join(ob1[0].split('\n\n')[1:])
             name1 = '/'.join(info1['extra.gamefile'][0].split('/')[-3:-1])
@@ -820,7 +845,7 @@ class AlfworldGUI(tk.Frame):
             if prompt_key:
                 prompt = main + 'Interact with a household to solve a task. Here are 2 examples.\n' + respact_prompts[f're{"sp"*respact}act_{prompt_key}_0'] + respact_prompts[f're{"sp"*respact}act_{prompt_key}_1'] + '\nHere is the task.\n'
 
-                r = self.alfworld_run(prompt, oracle_info, env1, env2, ob=ob, respact=respact)
+                r = self.alfworld_run(prompt, oracle_info, env1, env1b, env2, ob=ob, respact=respact)
 
                 message_queue.put(('reward', f"Final reward: {r}\n"))
                 message_queue.put(('status', f"Game completed with reward: {r}"))
@@ -828,19 +853,25 @@ class AlfworldGUI(tk.Frame):
                 message_queue.put(('system', f"Error: Could not determine prompt type for task: {selected_task}"))
                 message_queue.put(('status', "Error: Unknown task type"))
 
-        except KeyboardInterrupt as e:
+        except Exception as e:
             message_queue.put(('system', f"Error: {repr(e)}\n"))
             message_queue.put(('status', "Error occurred"))
 
-    def alfworld_run(self, prompt, oracle_info, env1, env2, ob='', respact=True):
+    def alfworld_run(self, prompt, oracle_info, env1, env1b, env2, ob='', respact=True):
         if respact:
             message_queue = self.message_queue
             status_bar = self.status_bar
             human_input_queue = self.human_input_queue
+            if self.capture_thor:
+                canvas_view: tk.Canvas = self.view1
+                canvas_image_id: int = self.imgId1
         else:
             message_queue = self.react_message_queue
             status_bar = self.react_status_bar
             human_input_queue = self.react_human_input_queue
+            if self.capture_thor:
+                canvas_view: tk.Canvas = self.view2
+                canvas_image_id: int = self.imgId2
 
         user_simulator_prompt = 'prompts/user_sim.txt'
         user_simulator = LLMUserAgent(oracle_info, 'gpt4', user_simulator_prompt)
@@ -917,6 +948,9 @@ class AlfworldGUI(tk.Frame):
                 # Process the action in both environments
                 try:
                     _,_,_,_ = env1.step([act_cmd])
+                    if self.top_view:
+                        _,_,_,_ = env1b.step([act_cmd])
+
                     observation, reward, done, info = env2.step([act_cmd])
                     observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
                 except Exception as e:
@@ -929,6 +963,30 @@ class AlfworldGUI(tk.Frame):
                     observation = 'Wrong response format. Please specify if it is a think, speak or act response.'
                 else:
                     observation = 'Wrong response format. Please specify if it is a think or act response.'
+
+            if self.top_view and self.capture_thor:
+                controller: Controller = env1.envs[0].controller.env
+                evt: Event = controller.step({
+                    "action": "GetThirdPartyCameraFrame",
+                    "thirdPartyCameraId": self.room_cam_id,
+                    "renderImage": True,
+                })
+                # evt: Event = controller.last_event
+                # frame = evt.third_party_camera_frames[-1]
+                frame = evt.metadata["thirdPartyCameras"][0]
+                message_queue.put(('system', str(frame)))
+                frame
+                # img_data = Image.fromarray(frame)
+                # img_data = img_data.resize((canvas_view.winfo_width(), canvas_view.winfo_height()), Image.Resampling.BILINEAR)
+                # img_data = ImageTk.PhotoImage(data=img_data)
+                #
+                # if respact:
+                #     self.img1 = img_data
+                # else:
+                #     self.img2 = img_data
+                #
+                # canvas_view.itemconfigure(tagOrId=canvas_image_id, image=img_data)
+                # message_queue.put(('system', "Updated top view image"))
 
             message_queue.put(('observation', observation))
 
@@ -944,7 +1002,7 @@ class AlfworldGUI(tk.Frame):
 
 # Main application
 if __name__ == "__main__":
-    filtered = False
+    filtered = True
 
     root = tk.Tk()
     root.geometry("1400x800")
@@ -953,6 +1011,7 @@ if __name__ == "__main__":
 
     tag_include = ['act', 'think'] if filtered else None
 
-    respact_app = AlfworldGUI(root, capture_thor=True, tag_include=tag_include, top_view=True)
+    # capture_thor doesn't really work
+    respact_app = AlfworldGUI(root, capture_thor=False, tag_include=tag_include, top_view=True)
 
     root.mainloop()
