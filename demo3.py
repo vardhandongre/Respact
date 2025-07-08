@@ -1,5 +1,6 @@
 import os
 import json
+import sys
 
 import yaml
 import tkinter as tk
@@ -68,17 +69,17 @@ def generate_human_task_description(task_desc):
     """Generate a more natural human description of the task using LLM"""
     prompt = [
         {"role": "system", "content": f"You are a helpful assistant that converts formal task descriptions into natural human instructions."
-                                      f"Keep your response concise and conversational. Convert this formal task description into a natural "
-                                      f"instruction as if a human is explaining the task to an AI assistant: '{task_desc}'. Start with 'Your"
+                                      f"Keep your response concise and conversational. Start with 'Your"
                                       f" task is to' and make it sound conversational but brief, If there is an object mentioned ask the AI "
                                       f"to first find the object in the environment. Don't use bullet points or numbered lists, just a simple"
                                       f" statement. For example, 'Your task is to look at pencil under the desklamp.' This can be converted "
                                       f"to 'Your task is to look at pencil under the desklamp. First, Find the pencil, then locate the "
-                                      f"desklamp and then examine it under the lamp.'"}
+                                      f"desklamp and then examine it under the lamp.'"},
+        {"role": "user", "content": f"Convert this formal task description into a natural instruction as if a human is explaining the task to an AI assistant: '{task_desc}'."}
     ]
 
     try:
-        response = llm(prompt, stop=[])
+        response = llm(prompt)
         return response
     except Exception as e:
         print(f"Error generating task description: {str(e)}")
@@ -95,24 +96,27 @@ def get_openai_client(use_azure=False):
         )
     else:
         client = OpenAI(
+            base_url=os.getenv("BASE_URL", None),
             api_key=os.getenv("OPENAI_API_KEY")
         )
     return client
 
 def llm(prompt, stop=("\n",), use_azure=False):
+    assert isinstance(prompt, list)
     client = get_openai_client(use_azure)
     # print([entry["id"] for entry in client.models.list().to_dict()["data"]])
     # model = "gpt-4o-mini" if use_azure else "gpt-4o"
     model = os.environ.get("DEPLOYMENT_NAME", "gpt-4o-mini")
 
+    # print(prompt, file=sys.stderr)
     response = client.chat.completions.create(
         model=model,
         messages=prompt,
         temperature=0,
         max_tokens=100,
         top_p=1,
-        frequency_penalty=0.0,
-        presence_penalty=0.0,
+        # frequency_penalty=0.0,
+        # presence_penalty=0.0,
         stop=stop
     )
     content = response.choices[0].message.content
@@ -741,7 +745,7 @@ class AlfworldGUI(tk.Frame):
 
             if respact:
                 # To prevent multithreaded race condition
-                time.sleep(1)
+                time.sleep(2)
 
             # Reset environments
             ob1, info1 = env1.reset()
@@ -853,7 +857,7 @@ class AlfworldGUI(tk.Frame):
                 message_queue.put(('system', f"Error: Could not determine prompt type for task: {selected_task}"))
                 message_queue.put(('status', "Error: Unknown task type"))
 
-        except Exception as e:
+        except KeyboardInterrupt as e:
             message_queue.put(('system', f"Error: {repr(e)}\n"))
             message_queue.put(('status', "Error occurred"))
 
@@ -905,7 +909,8 @@ class AlfworldGUI(tk.Frame):
             self.root.update_idletasks()
 
             message = [
-                {"role":"system", "content":init_prompt + running_prompt}
+                {"role":"system", "content":init_prompt},
+                {"role":"user", "content":running_prompt},
             ]
             action = llm(message, stop=['\n']).strip()
             _action = action.lstrip('> ').lower()
@@ -1009,9 +1014,9 @@ if __name__ == "__main__":
     root.configure(bg="#f5f5f5")
     root.title("ReSpAct AlfWorld Agent Comparison")
 
-    tag_include = ['act', 'think'] if filtered else None
+    tags = ['act', 'think'] if filtered else None
 
     # capture_thor doesn't really work
-    respact_app = AlfworldGUI(root, capture_thor=False, tag_include=tag_include, top_view=True)
+    respact_app = AlfworldGUI(root, capture_thor=False, tag_include=tags, top_view=False)
 
     root.mainloop()

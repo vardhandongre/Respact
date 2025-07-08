@@ -630,8 +630,7 @@ SinkBasinType - rtype
                  (exists (?o - object
                           ?a - agent)
                      (and
-                         (objectType ?o PencilType)
-                         (= ?o Pencil_bar__minus_00_dot_57_bar__plus_00_dot_86_bar__minus_01_dot_01)
+                         (objectType ?o PenType)
                          (holds ?a ?o)
                      )
                  )
