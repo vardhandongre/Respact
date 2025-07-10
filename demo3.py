@@ -700,7 +700,7 @@ class AlfworldGUI(tk.Frame):
                 self.info_frame.delete(1.0, tk.END)
 
                 # Display task info in the info frame
-                self.info_frame.insert(tk.END, f"SELECTED TASK: {selected_task.upper()}\n\n", "system")
+                self.info_frame.insert(tk.END, f"SELECTED CONFIG: {selected_task.upper()}\n", "system")
                 self.info_frame.insert(tk.END, f"Config Path: {config_path}\n\n", "system")
                 self.info_frame.configure(state="disabled")
 
@@ -713,11 +713,11 @@ class AlfworldGUI(tk.Frame):
             env1 = env1.init_env(batch_size=1)
 
             # TODO: both third person and first person
-            if self.top_view:
-                env1b = getattr(alfworld.agents.environment, config["env"]["type"])(config, train_eval=split)
-                env1b = env1b.init_env(batch_size=1)
-            else:
-                env1b = None
+            # if self.top_view:
+            #     env1b = getattr(alfworld.agents.environment, config["env"]["type"])(config, train_eval=split)
+            #     env1b = env1b.init_env(batch_size=1)
+            # else:
+            #     env1b = None
 
             env2 = getattr(alfworld.agents.environment, config2["env"]["type"])(config2, train_eval=split)
             env2 = env2.init_env(batch_size=1)
@@ -749,12 +749,12 @@ class AlfworldGUI(tk.Frame):
 
             # Reset environments
             ob1, info1 = env1.reset()
-            if self.top_view:
-                _, _ = env1b.reset()
+            # if self.top_view:
+            #     _, _ = env1b.reset()
             ob2, info2 = env2.reset()
 
             if self.top_view:
-                controller: OracleAStarAgent = env1b.envs[0].controller
+                controller: OracleAStarAgent = env1.envs[0].controller
                 thor: Controller = controller.env
                 # robot_id = controller.env.last_event.metadata["agent"]["objectId"]
                 # message_queue.put(('system',"Adding third party camera"))
@@ -849,7 +849,7 @@ class AlfworldGUI(tk.Frame):
             if prompt_key:
                 prompt = main + 'Interact with a household to solve a task. Here are 2 examples.\n' + respact_prompts[f're{"sp"*respact}act_{prompt_key}_0'] + respact_prompts[f're{"sp"*respact}act_{prompt_key}_1'] + '\nHere is the task.\n'
 
-                r = self.alfworld_run(prompt, oracle_info, env1, env1b, env2, ob=ob, respact=respact)
+                r = self.alfworld_run(prompt, oracle_info, env1, env2, ob=ob, respact=respact)
 
                 message_queue.put(('reward', f"Final reward: {r}\n"))
                 message_queue.put(('status', f"Game completed with reward: {r}"))
@@ -861,7 +861,7 @@ class AlfworldGUI(tk.Frame):
             message_queue.put(('system', f"Error: {repr(e)}\n"))
             message_queue.put(('status', "Error occurred"))
 
-    def alfworld_run(self, prompt, oracle_info, env1, env1b, env2, ob='', respact=True):
+    def alfworld_run(self, prompt, oracle_info, env1, env2, ob='', respact=True):
         if respact:
             message_queue = self.message_queue
             status_bar = self.status_bar
@@ -953,8 +953,8 @@ class AlfworldGUI(tk.Frame):
                 # Process the action in both environments
                 try:
                     _,_,_,_ = env1.step([act_cmd])
-                    if self.top_view:
-                        _,_,_,_ = env1b.step([act_cmd])
+                    # if self.top_view:
+                    #     _,_,_,_ = env1b.step([act_cmd])
 
                     observation, reward, done, info = env2.step([act_cmd])
                     observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
@@ -1017,6 +1017,6 @@ if __name__ == "__main__":
     tags = ['act', 'think'] if filtered else None
 
     # capture_thor doesn't really work
-    respact_app = AlfworldGUI(root, capture_thor=False, tag_include=tags, top_view=False)
+    respact_app = AlfworldGUI(root, capture_thor=False, tag_include=tags, top_view=True)
 
     root.mainloop()
