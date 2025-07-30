@@ -531,7 +531,7 @@ SinkBasinType - rtype
         (inReceptacle CreditCard_bar__minus_02_dot_16_bar__plus_00_dot_67_bar__plus_00_dot_68 Drawer_bar__minus_02_dot_07_bar__plus_00_dot_74_bar__plus_00_dot_73)
         (inReceptacle CD_bar__minus_02_dot_00_bar__plus_00_dot_67_bar__plus_00_dot_80 Drawer_bar__minus_02_dot_07_bar__plus_00_dot_74_bar__plus_00_dot_73)
         (inReceptacle Bowl_bar__minus_01_dot_83_bar__plus_00_dot_89_bar__plus_00_dot_37 Desk_bar__minus_01_dot_58_bar__plus_00_dot_02_bar__plus_00_dot_67)
-        ; (inReceptacle Pen_bar__minus_02_dot_09_bar__plus_00_dot_88_bar__plus_00_dot_58 Desk_bar__minus_01_dot_58_bar__plus_00_dot_02_bar__plus_00_dot_67)
+        (inReceptacle Pen_bar__minus_02_dot_09_bar__plus_00_dot_88_bar__plus_00_dot_58 Desk_bar__minus_01_dot_58_bar__plus_00_dot_02_bar__plus_00_dot_67)
         (inReceptacle Mug_bar__minus_02_dot_09_bar__plus_00_dot_88_bar__plus_00_dot_67 Desk_bar__minus_01_dot_58_bar__plus_00_dot_02_bar__plus_00_dot_67)
         (inReceptacle CreditCard_bar__minus_01_dot_22_bar__plus_00_dot_88_bar__plus_00_dot_83 Desk_bar__minus_01_dot_58_bar__plus_00_dot_02_bar__plus_00_dot_67)
         (inReceptacle DeskLamp_bar__minus_02_dot_30_bar__plus_00_dot_87_bar__plus_00_dot_75 Desk_bar__minus_01_dot_58_bar__plus_00_dot_02_bar__plus_00_dot_67)
@@ -621,28 +621,18 @@ SinkBasinType - rtype
                      (and
                          (objectType ?ot DeskLampType)
                          (toggleable ?ot)
-                         ; (isToggled ?ot)
+                         (isToggled ?ot)
                          (receptacleAtLocation ?r ?l)
                          (atLocation ?a ?l)
                          (inReceptacle ?ot ?r)
                      )
                  )
-                 ; (exists (?o - object
-                 ;          ?a - agent)
-                 ;     (and
-                 ;         (objectType ?o PenType)
-                 ;         (holds ?a ?o)
-                 ;     )
-                 ; )
-                 ( exists (?o - object
-                           ?r - receptacle)
-                       (and
-                            (objectType ?o PenType)
-                            (receptacleType ?r DeskType)
-                            (= ?r Desk_bar__minus_01_dot_58_bar__plus_00_dot_02_bar__plus_00_dot_67) ; Desk with Desk Lamp
-                            (inReceptacle ?o ?r)
-                            (pickupable ?o)
-                       )
+                 (exists (?o - object
+                          ?a - agent)
+                     (and
+                         (objectType ?o PenType)
+                         (holds ?a ?o)
+                     )
                  )
              )
         )

@@ -524,8 +524,9 @@ class AlfworldGUI(tk.Frame):
             self.input_text.configure(state=state)
             self.submit_button.configure(state=state)
         else:
-            self.react_input_text.configure(state=state)
-            self.react_submit_button.configure(state=state)
+            # self.react_input_text.configure(state=state)
+            # self.react_submit_button.configure(state=state)
+            pass
 
     def submit_human_input(self, event=None):
         if self.waiting_for_human_input:
@@ -541,17 +542,18 @@ class AlfworldGUI(tk.Frame):
                 self.toggle_input(False, respact=True)
 
     def submit_react_human_input(self, event=None):
-        if self.react_waiting_for_human_input:
-            response = self.react_input_text.get()
-            if response:
-                self.react_frame.configure(state="normal")
-                self.react_frame.insert(tk.END, f"👤 [Human] {response}\n", "human")
-                self.react_frame.see(tk.END)
-                self.react_frame.configure(state="disabled")
-                self.react_input_text.delete(0, tk.END)
-                self.react_human_input_queue.put(response)
-                self.react_waiting_for_human_input = False
-                self.toggle_input(False, respact=False)
+        pass
+        # if self.react_waiting_for_human_input:
+        #     response = self.react_input_text.get()
+        #     if response:
+        #         self.react_frame.configure(state="normal")
+        #         self.react_frame.insert(tk.END, f"👤 [Human] {response}\n", "human")
+        #         self.react_frame.see(tk.END)
+        #         self.react_frame.configure(state="disabled")
+        #         self.react_input_text.delete(0, tk.END)
+        #         self.react_human_input_queue.put(response)
+        #         self.react_waiting_for_human_input = False
+        #         self.toggle_input(False, respact=False)
 
     def process_queue(self):
         try:
@@ -598,6 +600,7 @@ class AlfworldGUI(tk.Frame):
             frame = self.react_frame
             status_bar = self.react_status_bar
             input_text = self.react_input_text
+            # input_text = None
         match msg_type:
             case 'log':
                 return
@@ -1007,7 +1010,7 @@ class AlfworldGUI(tk.Frame):
 
 # Main application
 if __name__ == "__main__":
-    filtered = True
+    filtered = False
 
     root = tk.Tk()
     root.geometry("1400x800")
@@ -1017,6 +1020,6 @@ if __name__ == "__main__":
     tags = ['act', 'think'] if filtered else None
 
     # capture_thor doesn't really work
-    respact_app = AlfworldGUI(root, capture_thor=False, tag_include=tags, top_view=True)
+    respact_app = AlfworldGUI(root, capture_thor=False, tag_include=tags, top_view=False)
 
     root.mainloop()

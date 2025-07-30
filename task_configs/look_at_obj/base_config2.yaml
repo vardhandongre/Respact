@@ -1,9 +1,9 @@
 dataset:
   data_path: '$ALFWORLD_DATA/json_2.1.1/train'
   eval_id_data_path: '$ALFWORLD_DATA/json_2.1.1/valid_seen'    # null/None to disable
-  eval_ood_data_path: 'demo_data/demo' # null/None to disable
+  eval_ood_data_path: 'demo_data/demo_7' # null/None to disable
   num_train_games: -1                                          # max training games (<=0 indicates full dataset)
-  num_eval_games: -1                                           # max evaluation games (<=0 indicates full dataset)
+  num_eval_games: 1                                           # max evaluation games (<=0 indicates full dataset)
 
 logic:
   domain: '$ALFWORLD_DATA/logic/alfred.pddl'                   # PDDL domain file that defines the world dynamics
@@ -13,7 +13,7 @@ env:
   type: 'AlfredTWEnv'                                          # 'AlfredTWEnv' or 'AlfredThorEnv' or 'AlfredHybrid'
   regen_game_files: False                                      # check if game is solvable by expert and save to game.tw-pddl file
   domain_randomization: False                                  # shuffle Textworld print order and object id nums
-  task_types: [2]                                              # task-type ids: 1 - Pick & Place, 2 - Examine in Light, 3 - Clean & Place, 4 - Heat & Place, 5 - Cool & Place, 6 - Pick Two & Place
+  task_types: [2]                               # task-type ids: 1 - Pick & Place, 2 - Examine in Light, 3 - Clean & Place, 4 - Heat & Place, 5 - Cool & Place, 6 - Pick Two & Place
   expert_timeout_steps: 150                                    # max steps before timeout for expert to solve the task
   expert_type: "handcoded"                                     # 'handcoded' or 'downward'. Note: the downward planner is very slow for real-time use
   goal_desc_human_anns_prob: 0.0                               # prob of using human-annotated goal language instead of templated goals (1.0 indicates all human annotations from ALFRED)
@@ -26,7 +26,7 @@ env:
   thor:
     screen_width: 600                                          # width of THOR window
     screen_height: 900                                         # height of THOR window
-    smooth_nav: False                                           # smooth rotations, looks, and translations during navigation (very slow)
+    smooth_nav: False                                          # smooth rotations, looks, and translations during navigation (very slow)
     save_frames_to_disk: False                                 # save frame PNGs to disk (useful for making videos)
     save_frames_path: './videos/'                              # path to save frame PNGs
 

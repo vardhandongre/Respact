@@ -1,9 +1,9 @@
 dataset:
   data_path: '$ALFWORLD_DATA/json_2.1.1/train'
   eval_id_data_path: '$ALFWORLD_DATA/json_2.1.1/valid_seen'    # null/None to disable
-  eval_ood_data_path: 'demo_data/demo_7' # null/None to disable
+  eval_ood_data_path: 'demo_data/demo' # null/None to disable
   num_train_games: -1                                          # max training games (<=0 indicates full dataset)
-  num_eval_games: 1                                           # max evaluation games (<=0 indicates full dataset)
+  num_eval_games: -1                                           # max evaluation games (<=0 indicates full dataset)
 
 logic:
   domain: '$ALFWORLD_DATA/logic/alfred.pddl'                   # PDDL domain file that defines the world dynamics
@@ -24,7 +24,7 @@ env:
     eval_mode: "tw"                                            # 'tw' or 'thor' - env used for evaluation during hybrid training
 
   thor:
-    screen_width: 1000                                          # width of THOR window
+    screen_width: 1200                                          # width of THOR window
     screen_height: 750                                         # height of THOR window
     smooth_nav: False                                          # smooth rotations, looks, and translations during navigation (very slow)
     save_frames_to_disk: False                                 # save frame PNGs to disk (useful for making videos)
@@ -36,7 +36,7 @@ controller:
   load_receps: True                                            # load receptacle locations from precomputed dict (if available)
 
 mask_rcnn:
-  pretrained_model_path: '$ALFWORLD_DATA/detectors/mrcnn_alfred_objects_sep13_004.pth'
+  pretrained_model_path: '$ALFWORLD_DATA/detectors/mrcnn.pth'
 
 general:
   random_seed: 42
