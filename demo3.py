@@ -113,11 +113,12 @@ def llm(prompt, stop=("\n",), use_azure=False):
         model=model,
         messages=prompt,
         temperature=0,
-        max_tokens=100,
+        # max_tokens=100,
         top_p=1,
         # frequency_penalty=0.0,
         # presence_penalty=0.0,
-        stop=stop
+        stop=stop,
+        timeout=30
     )
     content = response.choices[0].message.content
 
@@ -248,6 +249,12 @@ class AlfworldGUI(tk.Frame):
         self.paned_window = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
         self.paned_window.pack(fill=tk.BOTH, expand=True)
 
+        # I apologize for this monstrosity
+
+        # Center Pane - ReAct Agent Interaction
+        self.center_frame = ttk.Frame(self.paned_window, padding=5)
+        self.paned_window.add(self.center_frame, weight=4)
+
         # Left panel - Main interaction display
         self.left_frame = ttk.Frame(self.paned_window, padding=5)
         self.paned_window.add(self.left_frame, weight=4)
@@ -292,9 +299,6 @@ class AlfworldGUI(tk.Frame):
         self.submit_button = ttk.Button(self.input_frame, text="Submit", command=self.submit_human_input)
         self.submit_button.pack(side=tk.RIGHT, padx=(5, 0))
 
-        # Center Pane - ReAct Agent Interaction
-        self.center_frame = ttk.Frame(self.paned_window, padding=5)
-        self.paned_window.add(self.center_frame, weight=4)
 
         self.react_title = ttk.Label(self.center_frame, text="ReAct Agent (no friction)", font=("Helvetica", 14, "bold"))
         self.react_title.pack(pady=(0, 10), anchor="w")
@@ -1010,7 +1014,7 @@ class AlfworldGUI(tk.Frame):
 
 # Main application
 if __name__ == "__main__":
-    filtered = False
+    filtered = True
 
     root = tk.Tk()
     root.geometry("1400x800")
