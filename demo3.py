@@ -109,18 +109,21 @@ def llm(prompt, stop=("\n",), use_azure=False):
     model = os.environ.get("DEPLOYMENT_NAME", "gpt-4o-mini")
 
     # print(prompt, file=sys.stderr)
-    response = client.chat.completions.create(
-        model=model,
-        messages=prompt,
-        temperature=0,
-        # max_tokens=100,
-        top_p=1,
-        # frequency_penalty=0.0,
-        # presence_penalty=0.0,
-        stop=stop,
-        timeout=30
-    )
-    content = response.choices[0].message.content
+    while True:
+        response = client.chat.completions.create(
+            model=model,
+            messages=prompt,
+            temperature=0.2,
+            # max_tokens=100,
+            top_p=1,
+            # frequency_penalty=0.0,
+            # presence_penalty=0.0,
+            stop=stop,
+        )
+        content = response.choices[0].message.content
+        if content is not None:
+            break
+        print(response.choices)
 
     # Post-process to ensure we stop at the first occurrence of any stop sequence
     for stop_seq in stop:
@@ -679,6 +682,7 @@ class AlfworldGUI(tk.Frame):
 
     def run_game(self, respact: bool=True):
         message_queue = self.message_queue if respact else self.react_message_queue
+        status_bar = self.status_bar if respact else self.react_status_bar
         # Load configs
         try:
             selected_task = self.current_task.get()
@@ -864,9 +868,10 @@ class AlfworldGUI(tk.Frame):
                 message_queue.put(('system', f"Error: Could not determine prompt type for task: {selected_task}"))
                 message_queue.put(('status', "Error: Unknown task type"))
 
-        except KeyboardInterrupt as e:
+        except Exception as e:
             message_queue.put(('system', f"Error: {repr(e)}\n"))
             message_queue.put(('status', "Error occurred"))
+            status_bar.config(text=f"Error: {repr(e)}")
 
     def alfworld_run(self, prompt, oracle_info, env1, env2, ob='', respact=True):
         if respact:
@@ -919,7 +924,7 @@ class AlfworldGUI(tk.Frame):
                 {"role":"system", "content":init_prompt},
                 {"role":"user", "content":running_prompt},
             ]
-            action = llm(message, stop=['\n']).strip()
+            action = llm(message).strip()
             _action = action.lstrip('> ').lower()
             done = False
             reward = 0
